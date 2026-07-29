@@ -151,6 +151,7 @@ Mọi tài liệu dài thuộc về [[80_System]]. README chỉ là Home.
 | Convention            | ✅         |
 | Metadata              | ✅         |
 | Workflow (chi tiết)   | ✅         |
+| Claude Operating Guide | ✅         |
 | Templates             | ⏳         |
 | Dashboard (Dataview)  | ⏳         |
 | Automation            | ⏳         |
