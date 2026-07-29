@@ -695,18 +695,19 @@ Nguyên tắc roadmap: **nền trước, thực thi sau, tự động hóa cuố
 | Chủ đề             | Câu hỏi còn mở                                             |
 | --------------------- | -------------------------------------------------------------- |
 | Metadata schema    | Field bắt buộc tối thiểu cho project/task/knowledge?       |
-| Project skeleton   | Bộ file mặc định trong mỗi `10_Projects/<name>/`?          |
-| Knowledge taxonomy | Flat vs domain folders vs MOC?                             |
-| Tag strategy       | Ít tag có kiểm soát vs gần như không tag, chỉ folder+link? |
+| Project skeleton   | Bộ file mặc định trong mỗi `10_Projects/<name>/`? (default tạm: chỉ `README.md`, xem CONVENTION §9) |
+| Knowledge taxonomy | Flat vs domain folders vs MOC? (default tạm: Flat, xem CONVENTION §9) |
 | Multi-device sync  | Remote Git nào, nhánh nào?                                 |
 | Publish            | Có xuất subset Knowledge ra ngoài không?                   |
 
-### 12.3 Quyết định đã chốt (phiên 2026-07-29)
+### 12.3 Quyết định đã chốt
 
-| Chủ đề                              | Quyết định                                                                 |
-| -------------------------------------- | ------------------------------------------------------------------------------ |
-| Automation / AI là module hay layer? | Automation là Capability Layer thuần túy; AI Workspace là Content Module kép — vừa sở hữu nội dung vừa cấp năng lực xuyên suốt (§3.1) |
-| Một lifecycle chung hay nhiều loại?  | Tách 3 loại: Flow-based, Log-based, Reference-based (§7.1)                 |
+| Chủ đề                              | Quyết định                                                                 | Phiên |
+| -------------------------------------- | ------------------------------------------------------------------------------ | --- |
+| Automation / AI là module hay layer? | Automation là Capability Layer thuần túy; AI Workspace là Content Module kép — vừa sở hữu nội dung vừa cấp năng lực xuyên suốt (§3.1) | 2026-07-29 |
+| Một lifecycle chung hay nhiều loại?  | Tách 3 loại: Flow-based, Log-based, Reference-based (§7.1)                 | 2026-07-29 |
+| Naming convention                   | kebab-case cho note nội dung; ngoại lệ Journal (date), Templates (Title Case), file hệ thống (UPPERCASE) — xem CONVENTION §2 | 2026-07-29 |
+| Tag strategy                        | Hầu như không dùng tag — dựa vào folder + wikilink; ngoại lệ hẹp `#draft` — xem CONVENTION §6 | 2026-07-29 |
 
 ---
 
@@ -731,6 +732,7 @@ Tài liệu này là nền để triển khai lần lượt: Convention → Meta
 | v1 | trước 2026-07-29 | Bản Draft đầu tiên: tầm nhìn, 12 nguyên tắc, 13 module chi tiết, layer L0–L5, Data Flow, Information Lifecycle (5 giai đoạn), Roadmap 6 phase |
 | v2 | 2026-07-29 | Hợp nhất với bản thảo luận trong phiên: chính thức hóa phân biệt Content Module vs Capability Layer (§3.1); tách Information Lifecycle thành 3 loại Flow/Log/Reference-based (§7); bổ sung §5.4 đối chiếu hai lăng kính Layer và Content/Capability; thêm §12.3 ghi nhận quyết định đã chốt |
 | v2.1 | 2026-07-29 | Đổi tên thư mục `30_Prompts` → `30_AI` trong vault để khớp kiến trúc; cập nhật ghi chú chuyển tiếp ở §3 |
+| v2.2 | 2026-07-29 | Chốt Naming convention và Tag strategy (§12.3), chuyển từ Quyết định mở sang đã chốt; liên kết với `CONVENTION.md` mới viết |
 
 ---
 
