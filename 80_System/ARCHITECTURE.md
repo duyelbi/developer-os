@@ -485,9 +485,10 @@ Các thành phần tài liệu nền trong `80_System/`:
 | **CONVENTION**                 | Quy ước đặt tên, folder, linking, atomic note, chống trùng lặp  |
 | **METADATA**                   | Schema frontmatter/tags — hợp đồng dữ liệu cho Dataview sau này |
 | **WORKFLOW**                   | Mô tả chi tiết Developer Workflow & nhánh phụ                   |
-| **ROADMAP**                    | Lộ trình xây dựng hệ thống theo phase                           |
 | _(tùy chọn sau)_ **GLOSSARY**  | Thuật ngữ nội bộ OS                                             |
 | _(tùy chọn sau)_ **DECISIONS** | ADR cấp hệ thống (quyết định về chính OS)                       |
+
+Không có file `ROADMAP.md` riêng — roadmap nằm trong chính tài liệu này (§11), tránh tách một tài liệu ngắn khỏi ngữ cảnh kiến trúc mà nó phụ thuộc.
 
 ### 8.1 Phân ranh giới Home vs Core
 
@@ -514,7 +515,6 @@ graph TD
     CONV[CONVENTION]
     META[METADATA]
     WF[WORKFLOW]
-    RD[ROADMAP]
     CL[CLAUDE]
   end
 
@@ -631,7 +631,7 @@ Nguyên tắc roadmap: **nền trước, thực thi sau, tự động hóa cuố
 ### Phase 1 — Foundation
 
 - Khóa cấu trúc folder mục tiêu (`30_AI`, `80_System`)
-- Hoàn thiện Core docs: ARCHITECTURE, CONVENTION, METADATA, WORKFLOW, ROADMAP, CLAUDE
+- Hoàn thiện Core docs: ARCHITECTURE (bao gồm Roadmap ở §11), CONVENTION, METADATA, WORKFLOW, CLAUDE
 - Tách Home khỏi tài liệu dài (đã bắt đầu)
 - Git hygiene cơ bản
 
@@ -741,7 +741,8 @@ Tài liệu này là nền để triển khai lần lượt: Convention → Meta
 | v2.4 | 2026-07-29 | Phase 3 — AI Workspace: tạo `30_AI/Prompts/` với prompt thật đầu tiên; hoãn tạo 5 folder con còn lại và catalog/context pack tới khi có nội dung thật, đúng CONVENTION §7 |
 | v2.5 | 2026-07-29 | Phase 3-4: thêm `30_AI/Rules/senior-engineering-practices.md` (tổng quát hóa từ dự án Sapo Invoice); tạo project thật đầu tiên `10_Projects/sapo-invoice/`; chốt quyết định mới — developer-os thay thế phần đang dùng thật của AI toolkit riêng dự án (`ai-workspace`) qua subfolder `10_Projects/<project>/ai/`, không phải `30_AI` (§3.1, §4.3, §12.3); chốt Project skeleton (chuyển từ quyết định mở sang đã chốt, §12.2/§12.3) |
 | v2.6 | 2026-07-29 | Phase 5: `README.md` §Hôm nay chuyển từ text tĩnh sang Dataview thật (Active Project, Open Tasks, Recent Notes, Learning; Last Commit dùng UI Obsidian Git). Phase 6: cấu hình Templater `folder_templates` cho `20_Knowledge` → `Knowledge.md`; ghi nhận hook/orphan review vẫn để mở tới khi vault đủ lớn |
+| v2.7 | 2026-07-29 | Verification pass: phát hiện và sửa broken link `[[80_System/ROADMAP]]` trong `README.md` — file này chưa từng tồn tại, Roadmap luôn nằm ở §11 của chính ARCHITECTURE.md. Sửa §8 (bảng Core docs + ghi chú), §9.1 (bỏ node `RD[ROADMAP]` khỏi mermaid), Phase 1 checklist, dòng ghi chú cuối file |
 
 ---
 
-_Tài liệu thuộc Core System. Khi kiến trúc thay đổi, cập nhật file này trước, rồi đồng bộ CONVENTION / WORKFLOW / ROADMAP._
+_Tài liệu thuộc Core System. Khi kiến trúc thay đổi, cập nhật file này trước (bao gồm Roadmap ở §11), rồi đồng bộ CONVENTION / WORKFLOW._
