@@ -48,6 +48,7 @@ Mở trang này mỗi ngày. Đọc trong 30 giây. Điều hướng. Làm việ
 
 **Mở**
 
+- [[80_System/PLAYBOOK]]
 - [[80_System/ARCHITECTURE]]
 - [[80_System/WORKFLOW]]
 - [[80_System/CONVENTION]]
@@ -162,6 +163,7 @@ Chi tiết: [[80_System/WORKFLOW]]
 | [[80_System/CONVENTION]]   | Quy ước đặt tên, cấu trúc, linking                       |
 | [[80_System/METADATA]]     | Frontmatter & tags chuẩn                                 |
 | [[80_System/WORKFLOW]]     | Luồng làm việc đầy đủ                                    |
+| [[80_System/PLAYBOOK]]     | Mở đầu mỗi phiên — case cụ thể nên làm gì, mở ở đâu       |
 | [[80_System/ARCHITECTURE#11. Roadmap phát triển]] | Lộ trình xây dựng hệ thống theo phase (không phải file riêng) |
 
 Mọi tài liệu dài thuộc về [[80_System/README|80_System]]. README chỉ là Home.

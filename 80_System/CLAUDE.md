@@ -42,6 +42,7 @@ Thứ tự đọc khi bắt đầu một phiên làm việc mới trên vault n�
 | Tạo/đặt tên note mới | `CONVENTION.md` §2 (naming), §7 (theo module) |
 | Thêm field frontmatter | `METADATA.md` — không tự bịa field ngoài schema |
 | Thực hiện một luồng công việc (Bug, Decision, Learning...) | `WORKFLOW.md` mục tương ứng |
+| Bắt đầu một task/bug thực tế (Invoice, Design System, dự án khác...) | `PLAYBOOK.md` — tìm đúng case trước khi làm |
 
 Không thao tác trực tiếp dựa trên suy đoán khi tài liệu tương ứng đã tồn tại — đọc trước, hỏi khi tài liệu không phủ tới tình huống hiện tại.
 
@@ -96,6 +97,7 @@ Chưa có quy ước riêng cho việc Claude tự động hóa (Automation Laye
 | Phiên bản | Ngày | Thay đổi |
 |---|---|---|
 | v1 | 2026-07-29 | Bản đầu tiên: vai trò, thứ tự đọc tài liệu, nguyên tắc làm việc, ranh giới hỏi/tự quyết, quy tắc git, hai giới hạn kỹ thuật đã gặp (git lock, GitHub connector write permission) |
+| v1.1 | 2026-07-29 | §2: thêm dòng trỏ tới `PLAYBOOK.md` khi bắt đầu 1 task/bug thực tế |
 
 ---
 

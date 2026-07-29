@@ -13,6 +13,7 @@ Luật vận hành vault — không phải nội dung tri thức thông thườn
 - [[80_System/METADATA]] — schema frontmatter cho từng loại note
 - [[80_System/WORKFLOW]] — luồng thao tác cụ thể (chi tiết hóa Data Flow)
 - [[80_System/CLAUDE]] — operating guide khi làm việc với Claude/AI trên vault này
+- [[80_System/PLAYBOOK]] — mở đầu mỗi phiên: case cụ thể (task/bug Invoice, component Design System, dự án cá nhân...) nên mở Claude/Cursor ở đâu và làm gì trước
 
 Không có file `ROADMAP.md` riêng — roadmap nằm trong `ARCHITECTURE.md` §11 (xem `ARCHITECTURE.md` §8 để biết lý do).
 
