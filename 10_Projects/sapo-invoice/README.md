@@ -41,6 +41,7 @@ Phần chưa migrate (thư viện prompt theo bước, template `SELFTEST_CHECKL
 
 - Entry point AI cho toàn bộ workspace ngoài vault: `/Users/sapo/invoice/AGENTS.md`
 - Nguyên tắc AI tổng quát (nhiều dự án): [[30_AI/Rules/senior-engineering-practices]]
+- Thư viện UI dùng chung: [[10_Projects/design-system/README]] — xem ghi chú ở đó về `@sapo/ui-components` vs `@sapo-finance/components` chưa xác nhận
 
 ## Ghi chú
 
