@@ -7,6 +7,11 @@
 # Obsidian Git plugin — file runtime, không phải config
 .obsidian/plugins/obsidian-git/*.log
 
+# Plugin binary/bundle — code vendor, cài lại được qua Community Plugin Browser.
+# Giữ lại manifest.json/data.json để biết plugin nào cần cài.
+.obsidian/plugins/*/main.js
+.obsidian/plugins/*/styles.css
+
 # macOS
 .DS_Store
 
