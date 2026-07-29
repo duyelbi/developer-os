@@ -1,0 +1,17 @@
+# Obsidian — trạng thái local, không cần đồng bộ qua Git
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/workspace.json.bak
+.obsidian/cache
+
+# Obsidian Git plugin — file runtime, không phải config
+.obsidian/plugins/obsidian-git/*.log
+
+# macOS
+.DS_Store
+
+# Obsidian trash (khi bật "move deleted files to .trash")
+.trash/
+
+# Log files
+*.log
