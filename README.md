@@ -148,7 +148,7 @@ Chi tiết: [[80_System/WORKFLOW]]
 - Không ghi kiến thức trùng lặp
 - Inbox chỉ để ghi nhanh — không phải nơi lưu lâu
 - Markdown only
-- AI assets nằm trong `30_AI` (Prompts / Claude / Cursor / Rules / MCP / Workflow)
+- AI assets tổng quát nằm trong `30_AI` (Prompts / Rules); đặc thù 1 dự án nằm trong `10_Projects/<ten-du-an>/ai/` (nếu có)
 
 👉 Chi tiết: [[80_System/CONVENTION]]
 
@@ -181,9 +181,10 @@ Mọi tài liệu dài thuộc về [[80_System/README|80_System]]. README chỉ
 | Metadata              | ✅         |
 | Workflow (chi tiết)   | ✅         |
 | Claude Operating Guide | ✅         |
+| Playbook (theo case)  | ✅         |
 | Phase 2 — Knowledge (chính sách) | ✅ (chờ nội dung thật) |
 | Phase 3 — AI Workspace | 🟡 (Prompts + Rules, còn lại chờ nội dung) |
-| Phase 4 — Projects (Sapo Invoice) | 🟡 (project + AI context migrate xong, ADR/Bug/SRS thật chưa chạy) |
+| Phase 4 — Projects (Sapo Invoice, Design System) | 🟡 (2 project + 1 Decision chạy thật; Bug/SRS/Review thật chưa có) |
 | Phase 5 — Dashboard (Dataview) | ✅ (query thật trong [[#📌 Hôm nay]]) |
 | Phase 6 — Automation | 🟡 (Templater cho Knowledge + git convention xong; hook/orphan review để mở) |
 
