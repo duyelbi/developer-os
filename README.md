@@ -149,7 +149,7 @@ Mọi tài liệu dài thuộc về [[80_System]]. README chỉ là Home.
 | README (Home)         | ✅         |
 | Architecture Blueprint | ✅         |
 | Convention            | ✅         |
-| Metadata              | ⏳         |
+| Metadata              | ✅         |
 | Workflow (chi tiết)   | ⏳         |
 | Templates             | ⏳         |
 | Dashboard (Dataview)  | ⏳         |

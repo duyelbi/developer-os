@@ -2,7 +2,7 @@
 
 > **Loại tài liệu:** Quy ước vận hành
 > **Phạm vi:** Cách đặt tên, cấu trúc note, linking, tag, commit — áp dụng cho toàn vault
-> **Không bao gồm:** Metadata schema đầy đủ (xem `METADATA.md`, chưa viết), workflow chi tiết (xem `WORKFLOW.md`, chưa viết)
+> **Không bao gồm:** Metadata schema đầy đủ (xem `METADATA.md`), workflow chi tiết (xem `WORKFLOW.md`, chưa viết)
 
 ---
 
@@ -70,7 +70,9 @@ Không đặt hai file trùng tên dù khác thư mục — Obsidian wikilink ph
 
 ## 4. Frontmatter tối thiểu
 
-Cho đến khi `METADATA.md` định nghĩa schema đầy đủ, mọi note **chỉ cần** hai field sau (đã có sẵn trong template):
+Schema frontmatter đầy đủ theo từng loại note (Knowledge, Bug, Decision, SRS...) nay do `METADATA.md` quy định chính thức — xem tài liệu đó thay vì suy đoán từ template.
+
+Quy tắc chung áp dụng mọi note, nhắc lại ngắn gọn ở đây (chi tiết xem `METADATA.md` §2):
 
 ```yaml
 ---
@@ -78,16 +80,9 @@ created: 2026-07-29 10:00
 ---
 ```
 
-Note thuộc **Reference-based lifecycle** (Career, Core System — xem `ARCHITECTURE.md` §7.4) thêm field `updated`:
+Note thuộc **Reference-based lifecycle** (Career, Core System — xem `ARCHITECTURE.md` §7.4) thêm field `updated`.
 
-```yaml
----
-created: 2026-07-29 10:00
-updated: 2026-07-29 10:00
----
-```
-
-Không thêm field khác (status, priority, project...) ngoài những gì template hiện có đã định nghĩa, để tránh tạo schema ngầm trước khi `METADATA.md` chốt chính thức.
+Không tự thêm field ngoài schema trong `METADATA.md` vào một note — nếu cần field mới, sửa `METADATA.md` trước.
 
 ---
 
@@ -155,6 +150,7 @@ Tag strategy và naming convention đã chốt trong phiên này — xem `ARCHIT
 | Phiên bản | Ngày | Thay đổi |
 |---|---|---|
 | v1 | 2026-07-29 | Bản đầu tiên: naming (kebab-case), atomic notes, frontmatter tối thiểu, linking, tag (hầu như không dùng), quy ước module, git commit |
+| v1.1 | 2026-07-29 | §4 trỏ sang `METADATA.md` làm nguồn chính thức cho schema frontmatter, thay vì quy tắc tạm thời |
 
 ---
 
