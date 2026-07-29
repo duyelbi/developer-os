@@ -31,9 +31,9 @@ Muốn xem rules/skill thật, vào thẳng:
 
 developer-os ở đây chỉ giữ: quyết định kỹ thuật, bug, bài học **từ góc nhìn của Duy khi tích hợp/dùng design-system trong các dự án khác** (vd Sapo Invoice) — dùng `Decision.md`/`Bug.md` đặt phẳng ngay trong `10_Projects/design-system/`.
 
-## Cần làm rõ (chưa chốt)
+## Quan hệ với @sapo/ui-components (đã xác nhận)
 
-`10_Projects/sapo-invoice/ai/rules-frontend.md` nhắc tới thư viện `@sapo/ui-components` (scope `@sapo`) — chưa xác nhận đây có phải cùng một thứ với `@sapo-finance/components` (scope `@sapo-finance`, package chính của repo này) hay là một thư viện khác/cũ hơn. Cần Duy xác nhận để cập nhật `rules-frontend.md` cho khớp thực tế nếu là cùng một hệ thống.
+`@sapo/ui-components` (dùng trong `rules-frontend.md` của Sapo Invoice) là thư viện UI **cũ**, riêng của Invoice. `@sapo-finance/components` (package chính của repo này) là thư viện **mới**, dùng chung cho nhiều service Sapo Finance — mục tiêu tối ưu và đồng bộ hơn giữa các service của công ty. Sapo Invoice đang migrate dần sang thư viện này — xem quyết định: `10_Projects/sapo-invoice/migrate-ui-components-sang-design-system.md`.
 
 ## Liên kết
 

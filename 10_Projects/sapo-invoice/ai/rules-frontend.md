@@ -7,6 +7,8 @@ scope: "Rules Cursor/Claude — Frontend React TypeScript (invoice-app, sapo-inv
 
 Migrate từ `ai-workspace/rules/cursor-frontend.md`. Dùng làm `.cursorrules`/`CLAUDE.md` ở root repo frontend khi cần, hoặc tham chiếu trực tiếp từ đây.
 
+> **UI library đang trong quá trình migrate (2026-07-29):** `@sapo/ui-components` bên dưới là thư viện **cũ**, hiện vẫn là thứ code thật đang dùng. `@sapo-finance/components` (từ mono-repo [[10_Projects/design-system/README]]) là thư viện **mới**, sẽ thay thế dần — mục tiêu tối ưu và đồng bộ với các service khác của công ty. Xem quyết định đầy đủ: `10_Projects/sapo-invoice/migrate-ui-components-sang-design-system.md`. Cho tới khi migrate xong, code mới trong các phần **chưa** migrate vẫn theo rule `@sapo/ui-components` ở dưới; phần đã migrate thì theo `@sapo-finance/components`.
+
 ## Tech Stack
 
 - React 18.2 + TypeScript 5.3 (strict — **KHÔNG** dùng features TypeScript 5.4+)
@@ -41,12 +43,14 @@ export const invoiceEndpoints = api.injectEndpoints({
 const anotherApi = createApi({ ... }) // ← cache invalidation BROKEN
 ```
 
-## UI Components — @sapo/ui-components
+## UI Components — @sapo/ui-components (legacy — xem ghi chú migrate ở đầu file)
 
 - **Check `@sapo/ui-components` TRƯỚC** khi tạo component mới
 - Tham chiếu: `import { Button, Table, Modal, Form } from '@sapo/ui-components'`
 - **KHÔNG** tự viết lại Button, Input, Table, Modal — đã có trong library
 - Admin frontend còn có `@sapo/ui-viz` cho charts (Highcharts)
+
+**Thư viện thay thế (`@sapo-finance/components`):** với component/màn hình mới đã được xác nhận migrate, ưu tiên `@sapo-finance/components` từ [[10_Projects/design-system/README]] thay vì `@sapo/ui-components`. Convention/API cụ thể của thư viện mới xem trực tiếp trong `design-system/packages/components/AGENTS.md` (không lặp lại ở đây — tránh trùng lặp khi thư viện còn đang phát triển).
 
 ## State Management
 
