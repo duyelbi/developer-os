@@ -153,6 +153,7 @@ Mọi tài liệu dài thuộc về [[80_System]]. README chỉ là Home.
 | Workflow (chi tiết)   | ✅         |
 | Claude Operating Guide | ✅         |
 | Phase 2 — Knowledge (chính sách) | ✅ (chờ nội dung thật) |
+| Phase 3 — AI Workspace | 🟡 (Prompts bắt đầu, còn lại chờ nội dung) |
 | Templates             | ⏳         |
 | Dashboard (Dataview)  | ⏳         |
 | Automation            | ⏳         |

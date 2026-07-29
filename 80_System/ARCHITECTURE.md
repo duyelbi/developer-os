@@ -646,12 +646,13 @@ Nguyên tắc roadmap: **nền trước, thực thi sau, tự động hóa cuố
 
 ### Phase 3 — AI Workspace
 
-- Đổi/tái cấu trúc `30_Prompts` → `30_AI/{Prompts,Claude,Cursor,Rules,MCP,Workflow}`
-- Catalog prompt theo mục đích (review, SRS, debug, …)
-- Đồng bộ tinh thần `80_System/CLAUDE` với thư mục `30_AI/Claude`
-- Context pack theo project
+- ~~Đổi tên `30_Prompts` → `30_AI`~~ — xong (v2.1). Tạo tiếp `{Claude,Cursor,Rules,MCP,Workflow}` khi có nội dung thật cho từng thư mục — không tạo rỗng trước (`CONVENTION.md` §7)
+- ~~Prompt đầu tiên~~ — `30_AI/Prompts/developer-os-solution-architect.md` (master prompt, xem `METADATA.md` §3.9)
+- Catalog prompt theo mục đích (review, SRS, debug, …) — chờ có ≥2-3 prompt thực tế mới đủ để catalog có ý nghĩa
+- Đồng bộ tinh thần `80_System/CLAUDE` với thư mục `30_AI/Claude` — chờ `30_AI/Claude/` có nội dung thật
+- Context pack theo project — chờ có project thật trong `10_Projects/`
 
-**Done khi:** mở session Claude/Cursor luôn biết lấy prompt/rules ở đâu.
+**Done khi:** mở session Claude/Cursor luôn biết lấy prompt/rules ở đâu. Đã có điểm khởi đầu (`30_AI/Prompts/`); phần còn lại phụ thuộc nội dung thật phát sinh theo thời gian, không phải khung sẵn.
 
 ### Phase 4 — Projects
 
@@ -734,6 +735,7 @@ Tài liệu này là nền để triển khai lần lượt: Convention → Meta
 | v2.1 | 2026-07-29 | Đổi tên thư mục `30_Prompts` → `30_AI` trong vault để khớp kiến trúc; cập nhật ghi chú chuyển tiếp ở §3 |
 | v2.2 | 2026-07-29 | Chốt Naming convention và Tag strategy (§12.3), chuyển từ Quyết định mở sang đã chốt; liên kết với `CONVENTION.md` mới viết |
 | v2.3 | 2026-07-29 | Đánh dấu Phase 2 — Knowledge: 3/4 mục đã xong từ Phase 1 (CONVENTION), mục còn lại (Inbox aging) xong qua WORKFLOW.md §2; ghi rõ tiêu chí "Done" của Phase 2 phụ thuộc sử dụng thực tế |
+| v2.4 | 2026-07-29 | Phase 3 — AI Workspace: tạo `30_AI/Prompts/` với prompt thật đầu tiên; hoãn tạo 5 folder con còn lại và catalog/context pack tới khi có nội dung thật, đúng CONVENTION §7 |
 
 ---
 

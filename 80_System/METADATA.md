@@ -98,6 +98,15 @@ Chỉ dùng `created` — Log-based, xem §2. Không có template riêng trong `
 
 Chỉ dùng `created` — Flow-based, xem §2. Không có template riêng hiện tại.
 
+### 3.9 Prompt (`30_AI/Prompts/`)
+
+| Field | Bắt buộc | Giá trị |
+|---|---|---|
+| `created` | Có | Datetime |
+| `scope` | Có | Mô tả ngắn phạm vi áp dụng, vd `"Master prompt — toàn bộ dự án"` hoặc `"Task-specific — code review"` |
+
+Content Module AI Workspace (§3.1 `ARCHITECTURE.md`) — không dùng lifecycle Reference-based dù prompt có thể được sửa nhiều lần; `scope` đủ để phân biệt, chưa cần `updated` tới khi có nhiều prompt và cần biết cái nào mới nhất.
+
 ---
 
 ## 4. Xung đột đã phát hiện & xử lý
@@ -131,6 +140,7 @@ Template `40_Templates/Knowledge.md` hiện có field `tags:` trong frontmatter 
 | Phiên bản | Ngày | Thay đổi |
 |---|---|---|
 | v1 | 2026-07-29 | Bản đầu tiên: field phổ quát, schema cho Knowledge/Bug/Decision/SRS, phát hiện và xử lý xung đột field `tags` trong template Knowledge |
+| v1.1 | 2026-07-29 | Thêm §3.9 Prompt (`30_AI/Prompts/`) — field `scope`, cho artifact AI đầu tiên của vault |
 
 ---
 
