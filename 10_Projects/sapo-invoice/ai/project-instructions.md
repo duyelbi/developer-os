@@ -60,7 +60,7 @@ Tôi (Duy) là developer tại Sapo, làm việc trên hệ thống **hoá đơn
 11. ✅ Ship
 ```
 
-Bug, quyết định kỹ thuật, bài học rút ra trong quá trình trên → ghi vào `10_Projects/sapo-invoice/` bằng template `Bug.md`/`Decision.md` (developer-os), không ghi rải rác nơi khác — xem cách lưu chủ động ở mục dưới. Bài học đủ tổng quát cho dự án khác → promote sang [[20_Knowledge]] hoặc [[30_AI/Rules/senior-engineering-practices]].
+Bug, quyết định kỹ thuật, bài học rút ra trong quá trình trên → ghi vào `10_Projects/sapo-invoice/` bằng template `Bug.md`/`Decision.md` (developer-os), không ghi rải rác nơi khác — xem cách lưu chủ động ở mục dưới. Bài học đủ tổng quát cho dự án khác → promote sang [[20_Knowledge/README|20_Knowledge]] hoặc [[30_AI/Rules/senior-engineering-practices]].
 
 ## Lưu Bug/Decision — chủ động, không chờ Duy làm thủ công
 

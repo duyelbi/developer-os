@@ -120,6 +120,16 @@ Cùng schema với Prompt (§3.9): `created` + `scope`.
 
 Áp dụng cho cả hai nơi: `30_AI/Rules/` (nguyên tắc tổng quát, nhiều dự án) và `10_Projects/<ten-du-an>/ai/` (rules/prompt đặc thù một dự án — vd `10_Projects/sapo-invoice/ai/rules-backend.md`, dùng khi developer-os thay thế một AI toolkit riêng của dự án đó). Cùng schema vì cùng bản chất: tài liệu hướng dẫn AI, khác nhau ở phạm vi áp dụng (`scope` đã tự phân biệt, không cần field riêng).
 
+### 3.11 Module Index (`README.md` của mỗi folder cấp 1: `00_Inbox/`, `20_Knowledge/`, `30_AI/`, `40_Templates/`, `50_Career/`, `60_Journal/`, `70_Learning/`, `80_System/`, `99_Archive/`)
+
+| Field | Bắt buộc | Giá trị |
+|---|---|---|
+| `created` | Có | Datetime |
+
+Không cần `status` hay `updated` — đây là trang chỉ mục tĩnh (mục đích module, link tới tài liệu/nội dung liên quan), không phải workflow item. Mục đích duy nhất: cho wikilink từ Home (`[[00_Inbox]]`...) có nơi thật để mở, thay vì trỏ vào folder không tồn tại dưới dạng note (Obsidian không tự mở folder qua wikilink).
+
+`10_Projects/` cũng cần một README cùng schema này (chỉ `created`) để liệt kê danh sách dự án — khác với README của từng dự án con bên trong (dùng schema Project, §3.5).
+
 ---
 
 ## 4. Xung đột đã phát hiện & xử lý
@@ -155,6 +165,7 @@ Template `40_Templates/Knowledge.md` hiện có field `tags:` trong frontmatter 
 | v1.1 | 2026-07-29 | Thêm §3.9 Prompt (`30_AI/Prompts/`) — field `scope`, cho artifact AI đầu tiên của vault |
 | v1.2 | 2026-07-29 | Chốt §3.5 Project (field `status`) và thêm §3.10 Rules — cho Project entry Sapo Invoice và Rules đầu tiên (Phase 3-4) |
 | v1.3 | 2026-07-29 | §3.10 mở rộng phạm vi sang `10_Projects/<ten-du-an>/ai/` — cho quyết định developer-os thay thế `ai-workspace` (AI toolkit riêng của dự án Sapo Invoice) |
+| v1.4 | 2026-07-29 | Thêm §3.11 Module Index — schema cho README.md của mỗi folder cấp 1, sửa lỗi wikilink từ Home trỏ vào folder không có note thật |
 
 ---
 

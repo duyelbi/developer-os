@@ -35,7 +35,7 @@ Phần chưa migrate (thư viện prompt theo bước, template `SELFTEST_CHECKL
 - **Có SRS từ BA:** nằm trong `invoice-docs/` (repo ngoài, BA giữ) — developer-os chỉ link tới, không copy.
 - **Không có SRS từ BA** (task nhỏ, không qua BA): tự viết spec ngắn ngay trong `10_Projects/sapo-invoice/` bằng template `SRS.md`.
 - **Quyết định kỹ thuật (ADR) và Bug cụ thể của dự án này:** ghi trực tiếp trong `10_Projects/sapo-invoice/` bằng template `Decision.md`/`Bug.md` — không ghi rải rác ở `ai-workspace` hay `invoice-docs` nữa.
-- Bài học đủ tổng quát cho dự án khác → promote sang [[20_Knowledge]] hoặc [[30_AI/Rules/senior-engineering-practices]].
+- Bài học đủ tổng quát cho dự án khác → promote sang [[20_Knowledge/README|20_Knowledge]] hoặc [[30_AI/Rules/senior-engineering-practices]].
 
 ## Liên kết
 

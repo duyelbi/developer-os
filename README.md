@@ -25,16 +25,16 @@ Mở trang này mỗi ngày. Đọc trong 30 giây. Điều hướng. Làm việ
 
 | Khu vực   | Vai trò                            | Link             |
 | --------- | ---------------------------------- | ---------------- |
-| Inbox     | Capture nhanh                      | [[00_Inbox]]     |
-| Projects  | Dự án đang làm                     | [[10_Projects]]  |
-| Knowledge | Tri thức tái sử dụng               | [[20_Knowledge]] |
-| AI        | Prompt, Claude, Cursor, Rules, MCP | [[30_AI]]        |
-| Templates | Mẫu note                           | [[40_Templates]] |
-| Career    | Nghề nghiệp                        | [[50_Career]]    |
-| Journal   | Nhật ký                            | [[60_Journal]]   |
-| Learning  | Học tập                            | [[70_Learning]]  |
-| System    | Quy tắc vận hành Vault             | [[80_System]]    |
-| Archive   | Đóng băng                          | [[99_Archive]]   |
+| Inbox     | Capture nhanh                      | [[00_Inbox/README\|00_Inbox]]     |
+| Projects  | Dự án đang làm                     | [[10_Projects/README\|10_Projects]]  |
+| Knowledge | Tri thức tái sử dụng               | [[20_Knowledge/README\|20_Knowledge]] |
+| AI        | Prompt, Claude, Cursor, Rules, MCP | [[30_AI/README\|30_AI]]        |
+| Templates | Mẫu note                           | [[40_Templates/README\|40_Templates]] |
+| Career    | Nghề nghiệp                        | [[50_Career/README\|50_Career]]    |
+| Journal   | Nhật ký                            | [[60_Journal/README\|60_Journal]]   |
+| Learning  | Học tập                            | [[70_Learning/README\|70_Learning]]  |
+| System    | Quy tắc vận hành Vault             | [[80_System/README\|80_System]]    |
+| Archive   | Đóng băng                          | [[99_Archive/README\|99_Archive]]   |
 
 ---
 
@@ -42,9 +42,9 @@ Mở trang này mỗi ngày. Đọc trong 30 giây. Điều hướng. Làm việ
 
 **Tạo nhanh**
 
-- [[00_Inbox]]
-- [[10_Projects]]
-- [[60_Journal]]
+- [[00_Inbox/README|00_Inbox]]
+- [[10_Projects/README|10_Projects]]
+- [[60_Journal/README|60_Journal]]
 
 **Mở**
 
@@ -54,9 +54,9 @@ Mở trang này mỗi ngày. Đọc trong 30 giây. Điều hướng. Làm việ
 
 **Review**
 
-- [[20_Knowledge]]
-- [[30_AI]]
-- [[70_Learning]]
+- [[20_Knowledge/README|20_Knowledge]]
+- [[30_AI/README|30_AI]]
+- [[70_Learning/README|70_Learning]]
 
 ---
 
@@ -164,7 +164,7 @@ Chi tiết: [[80_System/WORKFLOW]]
 | [[80_System/WORKFLOW]]     | Luồng làm việc đầy đủ                                    |
 | [[80_System/ARCHITECTURE#11. Roadmap phát triển]] | Lộ trình xây dựng hệ thống theo phase (không phải file riêng) |
 
-Mọi tài liệu dài thuộc về [[80_System]]. README chỉ là Home.
+Mọi tài liệu dài thuộc về [[80_System/README|80_System]]. README chỉ là Home.
 
 ---
 
