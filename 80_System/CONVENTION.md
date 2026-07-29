@@ -115,7 +115,7 @@ Nếu sau này Dashboard/Dataview (Phase 5) thực sự cần filter theo trạn
 
 | Module | Quy ước |
 |---|---|
-| **Projects** (`10_Projects/`) | Mỗi dự án một folder con kebab-case: `10_Projects/<ten-du-an>/`. Bên trong tối thiểu `README.md`; các note khác dùng template tương ứng (SRS, Decision, Bug) và đặt tên mô tả ngắn gọn kebab-case. |
+| **Projects** (`10_Projects/`) | Mỗi dự án một folder con kebab-case: `10_Projects/<ten-du-an>/`. Bên trong tối thiểu `README.md`; SRS/Decision/Bug dùng template tương ứng, đặt phẳng ngay trong folder dự án, tên mô tả ngắn gọn kebab-case. Nếu dự án cần thay thế một AI toolkit riêng (như `ai-workspace` của Sapo Invoice), tạo thêm subfolder `ai/` chứa rules/prompt đặc thù dự án — chỉ tạo khi có nội dung thật để chuyển vào, không tạo trước. |
 | **Knowledge** (`20_Knowledge/`) | **Flat** — không chia domain subfolder cho tới khi có nhu cầu thực tế (xem §9). Wikilink và tên file mô tả rõ chủ đề thay cho cấu trúc thư mục. |
 | **AI Workspace** (`30_AI/`) | Theo cấu trúc mục tiêu đã định trong `ARCHITECTURE.md` §4.5 (`Prompts/`, `Claude/`, `Cursor/`, `Rules/`, `MCP/`, `Workflow/`) — tạo dần khi có nội dung thật, không tạo folder rỗng trước. |
 | **Journal** (`60_Journal/`) | Một file một ngày, xem §2.3. Không tạo subfolder theo tháng/năm trừ khi số lượng file gây khó điều hướng. |
@@ -134,14 +134,13 @@ Nếu sau này Dashboard/Dataview (Phase 5) thực sự cần filter theo trạn
 
 ## 9. Còn để mở
 
-Hai quyết định trong `ARCHITECTURE.md` §12.2 chưa chốt, Convention này áp dụng **default tạm thời** thay vì ép quyết định sớm (đúng tinh thần Evolutionary Design):
+Một quyết định trong `ARCHITECTURE.md` §12.2 vẫn áp dụng **default tạm thời** (đúng tinh thần Evolutionary Design):
 
 | Chủ đề | Default tạm thời trong Convention này | Khi nào xét lại |
 |---|---|---|
 | Knowledge taxonomy | Flat (§7) | Khi `20_Knowledge/` vượt khoảng 50 note và flat gây khó tìm |
-| Project skeleton | Chỉ bắt buộc `README.md`, phần còn lại tự do theo template | Khi có ≥2 dự án thực chạy và thấy lặp lại cấu trúc giống nhau |
 
-Tag strategy và naming convention đã chốt trong phiên này — xem `ARCHITECTURE.md` §12.3.
+Project skeleton đã chốt ở Phase 4 (project thật đầu tiên — Sapo Invoice): tối thiểu `README.md` với frontmatter `status` (xem `METADATA.md` §3.5), phần còn lại tự do — không có bộ file bắt buộc cố định. Tag strategy và naming convention đã chốt từ phiên trước — xem `ARCHITECTURE.md` §12.3.
 
 ---
 
@@ -151,6 +150,8 @@ Tag strategy và naming convention đã chốt trong phiên này — xem `ARCHIT
 |---|---|---|
 | v1 | 2026-07-29 | Bản đầu tiên: naming (kebab-case), atomic notes, frontmatter tối thiểu, linking, tag (hầu như không dùng), quy ước module, git commit |
 | v1.1 | 2026-07-29 | §4 trỏ sang `METADATA.md` làm nguồn chính thức cho schema frontmatter, thay vì quy tắc tạm thời |
+| v1.2 | 2026-07-29 | §9: Project skeleton đã chốt (Phase 4, project Sapo Invoice) — chỉ còn Knowledge taxonomy là quyết định mở |
+| v1.3 | 2026-07-29 | §7: thêm quy ước subfolder `ai/` trong project — cho quyết định developer-os thay thế AI toolkit riêng của dự án (Sapo Invoice / `ai-workspace`) |
 
 ---
 

@@ -148,9 +148,11 @@ Phân biệt này giúp tránh một câu hỏi sai thường gặp: *"ghi chú 
 | **Vai trò**         | Không gian làm việc theo project — delivery-oriented                                           |
 | **Dữ liệu quản lý** | Requirement/SRS, planning, decision (ADR), bug, meeting, review notes, context pack cho AI     |
 | **Loại note**       | Project README, SRS, Decision, Bug, Plan, Review, Meeting                                      |
-| **Folder**          | `10_Projects/<ten-du-an>/`                                                                     |
+| **Folder**          | `10_Projects/<ten-du-an>/`, có thể thêm `ai/` nếu dự án cần thay thế một AI toolkit riêng (xem dưới) |
 | **Quan hệ**         | Nhận từ Capture; dùng AI Workspace để thực thi; xuất tri thức sang Knowledge; đóng vào Archive |
 | **Khi nào dùng**    | Mọi công việc gắn với một sản phẩm / codebase / initiative cụ thể                              |
+
+**Trường hợp đặc biệt — dự án có AI toolkit riêng:** một số dự án (vd Sapo Invoice) có sẵn một repo AI toolkit riêng bên ngoài vault (`ai-workspace`: rules, prompts, templates đặc thù stack của dự án đó). Quyết định (2026-07-29): phần đang thực sự dùng của toolkit đó chuyển vào `10_Projects/<ten-du-an>/ai/` trong developer-os thay vì duy trì song song hai nơi — xem ví dụ `10_Projects/sapo-invoice/ai/`. Đây vẫn là Content Module Projects (nội dung đặc thù một dự án), không phải AI Workspace (`30_AI`) — phân biệt theo §3.1: `30_AI` chỉ chứa nguyên tắc tổng quát áp dụng nhiều dự án. Phần chưa migrate (ít dùng hơn) tiếp tục ở repo ngoài cho tới khi thực sự cần, đúng tinh thần Evolutionary Design.
 
 ---
 
@@ -648,19 +650,21 @@ Nguyên tắc roadmap: **nền trước, thực thi sau, tự động hóa cuố
 
 - ~~Đổi tên `30_Prompts` → `30_AI`~~ — xong (v2.1). Tạo tiếp `{Claude,Cursor,Rules,MCP,Workflow}` khi có nội dung thật cho từng thư mục — không tạo rỗng trước (`CONVENTION.md` §7)
 - ~~Prompt đầu tiên~~ — `30_AI/Prompts/developer-os-solution-architect.md` (master prompt, xem `METADATA.md` §3.9)
+- ~~Rules tổng quát đầu tiên~~ — `30_AI/Rules/senior-engineering-practices.md`, rút ra và tổng quát hóa từ kinh nghiệm dự án Sapo Invoice (xem `METADATA.md` §3.10)
 - Catalog prompt theo mục đích (review, SRS, debug, …) — chờ có ≥2-3 prompt thực tế mới đủ để catalog có ý nghĩa
 - Đồng bộ tinh thần `80_System/CLAUDE` với thư mục `30_AI/Claude` — chờ `30_AI/Claude/` có nội dung thật
-- Context pack theo project — chờ có project thật trong `10_Projects/`
+- ~~Context pack theo project~~ — thực tế phát sinh dưới dạng `10_Projects/<project>/ai/` (Content Module Projects), không phải `30_AI` — xem quyết định §12.3 và §4.3
 
-**Done khi:** mở session Claude/Cursor luôn biết lấy prompt/rules ở đâu. Đã có điểm khởi đầu (`30_AI/Prompts/`); phần còn lại phụ thuộc nội dung thật phát sinh theo thời gian, không phải khung sẵn.
+**Done khi:** mở session Claude/Cursor luôn biết lấy prompt/rules ở đâu. Đã có điểm khởi đầu (`30_AI/Prompts/`, `30_AI/Rules/`); phần còn lại phụ thuộc nội dung thật phát sinh theo thời gian, không phải khung sẵn.
 
 ### Phase 4 — Projects
 
-- Chuẩn hóa cấu trúc trong `10_Projects/<project>/`
-- Vòng Requirement → … → Archive chạy thật trên 1–2 dự án
-- ADR + Bug + Review như artifact bắt buộc của delivery
+- ~~Chuẩn hóa cấu trúc trong `10_Projects/<project>/`~~ — README + frontmatter `status` chốt qua ví dụ thật đầu tiên: [[10_Projects/sapo-invoice/README]]
+- ~~Migrate AI toolkit riêng của dự án (nếu có)~~ — phần đang dùng thật của `ai-workspace` chuyển vào `10_Projects/sapo-invoice/ai/` (`rules-backend.md`, `rules-frontend.md`, `project-instructions.md`)
+- Vòng Requirement → … → Archive chạy thật trên dự án Sapo Invoice — chưa có Decision/Bug/SRS thật nào được tạo, chỉ mới có README + `ai/`
+- ADR + Bug + Review như artifact bắt buộc của delivery — chờ phát sinh từ công việc thật (task tiếp theo trên Sapo Invoice)
 
-**Done khi:** một dự án mẫu vận hành end-to-end theo Data Flow.
+**Done khi:** một dự án mẫu vận hành end-to-end theo Data Flow. Đã có project thật (Sapo Invoice) với AI context; còn thiếu vòng lặp Decision/Bug/SRS chạy thật.
 
 ### Phase 5 — Dashboard
 
@@ -696,7 +700,6 @@ Nguyên tắc roadmap: **nền trước, thực thi sau, tự động hóa cuố
 | Chủ đề             | Câu hỏi còn mở                                             |
 | --------------------- | -------------------------------------------------------------- |
 | Metadata schema    | Field bắt buộc tối thiểu cho project/task/knowledge?       |
-| Project skeleton   | Bộ file mặc định trong mỗi `10_Projects/<name>/`? (default tạm: chỉ `README.md`, xem CONVENTION §9) |
 | Knowledge taxonomy | Flat vs domain folders vs MOC? (default tạm: Flat, xem CONVENTION §9) |
 | Multi-device sync  | Remote Git nào, nhánh nào?                                 |
 | Publish            | Có xuất subset Knowledge ra ngoài không?                   |
@@ -709,8 +712,8 @@ Nguyên tắc roadmap: **nền trước, thực thi sau, tự động hóa cuố
 | Một lifecycle chung hay nhiều loại?  | Tách 3 loại: Flow-based, Log-based, Reference-based (§7.1)                 | 2026-07-29 |
 | Naming convention                   | kebab-case cho note nội dung; ngoại lệ Journal (date), Templates (Title Case), file hệ thống (UPPERCASE) — xem CONVENTION §2 | 2026-07-29 |
 | Tag strategy                        | Hầu như không dùng tag — dựa vào folder + wikilink; ngoại lệ hẹp `#draft` — xem CONVENTION §6 | 2026-07-29 |
-
----
+| Project skeleton                    | Tối thiểu `README.md` với frontmatter `status`; phần còn lại tự do, không có bộ file bắt buộc cố định — chốt qua ví dụ Sapo Invoice — xem `METADATA.md` §3.5 | 2026-07-29 |
+| Dự án có AI toolkit riêng (vd `ai-workspace`) | Phần đang thực sự dùng chuyển vào `10_Projects/<project>/ai/` trong developer-os thay vì duy trì song song; phần ít dùng ở lại repo ngoài tới khi cần — xem §4.3 | 2026-07-29 |
 
 ## Kết luận
 
@@ -736,6 +739,7 @@ Tài liệu này là nền để triển khai lần lượt: Convention → Meta
 | v2.2 | 2026-07-29 | Chốt Naming convention và Tag strategy (§12.3), chuyển từ Quyết định mở sang đã chốt; liên kết với `CONVENTION.md` mới viết |
 | v2.3 | 2026-07-29 | Đánh dấu Phase 2 — Knowledge: 3/4 mục đã xong từ Phase 1 (CONVENTION), mục còn lại (Inbox aging) xong qua WORKFLOW.md §2; ghi rõ tiêu chí "Done" của Phase 2 phụ thuộc sử dụng thực tế |
 | v2.4 | 2026-07-29 | Phase 3 — AI Workspace: tạo `30_AI/Prompts/` với prompt thật đầu tiên; hoãn tạo 5 folder con còn lại và catalog/context pack tới khi có nội dung thật, đúng CONVENTION §7 |
+| v2.5 | 2026-07-29 | Phase 3-4: thêm `30_AI/Rules/senior-engineering-practices.md` (tổng quát hóa từ dự án Sapo Invoice); tạo project thật đầu tiên `10_Projects/sapo-invoice/`; chốt quyết định mới — developer-os thay thế phần đang dùng thật của AI toolkit riêng dự án (`ai-workspace`) qua subfolder `10_Projects/<project>/ai/`, không phải `30_AI` (§3.1, §4.3, §12.3); chốt Project skeleton (chuyển từ quyết định mở sang đã chốt, §12.2/§12.3) |
 
 ---
 

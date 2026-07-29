@@ -153,7 +153,8 @@ Mọi tài liệu dài thuộc về [[80_System]]. README chỉ là Home.
 | Workflow (chi tiết)   | ✅         |
 | Claude Operating Guide | ✅         |
 | Phase 2 — Knowledge (chính sách) | ✅ (chờ nội dung thật) |
-| Phase 3 — AI Workspace | 🟡 (Prompts bắt đầu, còn lại chờ nội dung) |
+| Phase 3 — AI Workspace | 🟡 (Prompts + Rules, còn lại chờ nội dung) |
+| Phase 4 — Projects (Sapo Invoice) | 🟡 (project + AI context migrate xong, ADR/Bug/SRS thật chưa chạy) |
 | Templates             | ⏳         |
 | Dashboard (Dataview)  | ⏳         |
 | Automation            | ⏳         |

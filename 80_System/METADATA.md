@@ -84,7 +84,14 @@ Khi một Decision bị thay thế, đổi `status` thành `Superseded` và thê
 
 ### 3.5 Project (README của `10_Projects/<ten-du-an>/`)
 
-**Chưa định nghĩa.** Project skeleton còn là quyết định mở (`CONVENTION.md` §9, `ARCHITECTURE.md` §12.2) — schema cho Project README sẽ chốt cùng lúc với Project skeleton ở Phase 4, tránh định nghĩa field cho một cấu trúc chưa tồn tại.
+Chốt cùng lúc với Project entry thật đầu tiên (Sapo Invoice, Phase 4):
+
+| Field | Bắt buộc | Giá trị |
+|---|---|---|
+| `created` | Có | Datetime |
+| `status` | Có | `Active` \| `Paused` \| `Archived` |
+
+Không thêm field mô tả danh sách repo con trong frontmatter (danh sách dài, không đều, không phù hợp query) — ghi trong nội dung note dưới dạng danh sách thường.
 
 ### 3.6 Career (`50_Career/`)
 
@@ -106,6 +113,12 @@ Chỉ dùng `created` — Flow-based, xem §2. Không có template riêng hiện
 | `scope` | Có | Mô tả ngắn phạm vi áp dụng, vd `"Master prompt — toàn bộ dự án"` hoặc `"Task-specific — code review"` |
 
 Content Module AI Workspace (§3.1 `ARCHITECTURE.md`) — không dùng lifecycle Reference-based dù prompt có thể được sửa nhiều lần; `scope` đủ để phân biệt, chưa cần `updated` tới khi có nhiều prompt và cần biết cái nào mới nhất.
+
+### 3.10 Rules (`30_AI/Rules/` và `10_Projects/<ten-du-an>/ai/`)
+
+Cùng schema với Prompt (§3.9): `created` + `scope`.
+
+Áp dụng cho cả hai nơi: `30_AI/Rules/` (nguyên tắc tổng quát, nhiều dự án) và `10_Projects/<ten-du-an>/ai/` (rules/prompt đặc thù một dự án — vd `10_Projects/sapo-invoice/ai/rules-backend.md`, dùng khi developer-os thay thế một AI toolkit riêng của dự án đó). Cùng schema vì cùng bản chất: tài liệu hướng dẫn AI, khác nhau ở phạm vi áp dụng (`scope` đã tự phân biệt, không cần field riêng).
 
 ---
 
@@ -129,7 +142,6 @@ Template `40_Templates/Knowledge.md` hiện có field `tags:` trong frontmatter 
 
 | Chủ đề | Trạng thái |
 |---|---|
-| Schema cho Project README | Chờ Project skeleton chốt ở Phase 4 |
 | Field đo tiến độ cho Career | Chưa có nhu cầu cụ thể, chưa thiết kế |
 | Field cho Journal/Learning ngoài `created` | Chưa có nhu cầu cụ thể |
 
@@ -141,6 +153,8 @@ Template `40_Templates/Knowledge.md` hiện có field `tags:` trong frontmatter 
 |---|---|---|
 | v1 | 2026-07-29 | Bản đầu tiên: field phổ quát, schema cho Knowledge/Bug/Decision/SRS, phát hiện và xử lý xung đột field `tags` trong template Knowledge |
 | v1.1 | 2026-07-29 | Thêm §3.9 Prompt (`30_AI/Prompts/`) — field `scope`, cho artifact AI đầu tiên của vault |
+| v1.2 | 2026-07-29 | Chốt §3.5 Project (field `status`) và thêm §3.10 Rules — cho Project entry Sapo Invoice và Rules đầu tiên (Phase 3-4) |
+| v1.3 | 2026-07-29 | §3.10 mở rộng phạm vi sang `10_Projects/<ten-du-an>/ai/` — cho quyết định developer-os thay thế `ai-workspace` (AI toolkit riêng của dự án Sapo Invoice) |
 
 ---
 
