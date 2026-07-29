@@ -668,20 +668,20 @@ Nguyên tắc roadmap: **nền trước, thực thi sau, tự động hóa cuố
 
 ### Phase 5 — Dashboard
 
-- Metadata đủ để query
-- Dataview trên Home: Active Project, Open Tasks, Recent Notes, Learning, Last Commit
-- Bỏ hoàn toàn cập nhật tay phần "Hôm nay"
+- ~~Metadata đủ để query~~ — `status`/`created` đã chốt cho Project (§METADATA §3.5), đủ cho truy vấn Active Project
+- ~~Dataview trên Home~~ — Active Project, Open Tasks (task checkbox toàn vault), Recent Notes, Learning chạy bằng Dataview thật trong README §Hôm nay; Last Commit không query được bằng Dataview, dùng UI Obsidian Git thay thế (ghi rõ trong README)
+- ~~Bỏ hoàn toàn cập nhật tay phần "Hôm nay"~~ — đã thay bằng query, không còn text tĩnh
 
-**Done khi:** Home không bao giờ lỗi thời vì quên update.
+**Done khi:** Home không bao giờ lỗi thời vì quên update. Đạt được — phần "Hôm nay" nay tự query, chỉ còn phụ thuộc có đủ note thật để trả về kết quả (hiện tại phần lớn module còn trống nên query trả về ít/rỗng — đúng thực tế, không phải lỗi).
 
 ### Phase 6 — Automation
 
-- Templater folder templates
-- Git commit convention / định kỳ
-- Hook nhẹ (nếu cần)
-- Orphan note review, archive review định kỳ
+- ~~Templater folder templates~~ — `20_Knowledge/` tự áp `Knowledge.md` khi tạo note mới (`.obsidian/plugins/templater-obsidian/data.json` → `folder_templates`). Chưa cấu hình cho `10_Projects/`, `50_Career`... vì chưa có template ứng với việc tạo hàng loạt ở đó (Project dùng README viết tay, không qua Templater)
+- ~~Git commit convention~~ — đã có từ Phase 1, xem `CONVENTION.md` §8
+- Hook nhẹ (nếu cần) — chưa có nhu cầu cụ thể, để mở
+- Orphan note review, archive review định kỳ — chưa có nhu cầu cụ thể (vault còn nhỏ), để mở tới khi cần
 
-**Done khi:** ma sát vận hành hàng ngày thấp; OS "tự chạy" phần quan sát.
+**Done khi:** ma sát vận hành hàng ngày thấp; OS "tự chạy" phần quan sát. Đạt phần cốt lõi (Templater cho Knowledge, git convention); phần còn lại (hook, orphan review) hoãn tới khi vault đủ lớn để thấy nhu cầu thật — đúng Evolutionary Design.
 
 ---
 
@@ -740,6 +740,7 @@ Tài liệu này là nền để triển khai lần lượt: Convention → Meta
 | v2.3 | 2026-07-29 | Đánh dấu Phase 2 — Knowledge: 3/4 mục đã xong từ Phase 1 (CONVENTION), mục còn lại (Inbox aging) xong qua WORKFLOW.md §2; ghi rõ tiêu chí "Done" của Phase 2 phụ thuộc sử dụng thực tế |
 | v2.4 | 2026-07-29 | Phase 3 — AI Workspace: tạo `30_AI/Prompts/` với prompt thật đầu tiên; hoãn tạo 5 folder con còn lại và catalog/context pack tới khi có nội dung thật, đúng CONVENTION §7 |
 | v2.5 | 2026-07-29 | Phase 3-4: thêm `30_AI/Rules/senior-engineering-practices.md` (tổng quát hóa từ dự án Sapo Invoice); tạo project thật đầu tiên `10_Projects/sapo-invoice/`; chốt quyết định mới — developer-os thay thế phần đang dùng thật của AI toolkit riêng dự án (`ai-workspace`) qua subfolder `10_Projects/<project>/ai/`, không phải `30_AI` (§3.1, §4.3, §12.3); chốt Project skeleton (chuyển từ quyết định mở sang đã chốt, §12.2/§12.3) |
+| v2.6 | 2026-07-29 | Phase 5: `README.md` §Hôm nay chuyển từ text tĩnh sang Dataview thật (Active Project, Open Tasks, Recent Notes, Learning; Last Commit dùng UI Obsidian Git). Phase 6: cấu hình Templater `folder_templates` cho `20_Knowledge` → `Knowledge.md`; ghi nhận hook/orphan review vẫn để mở tới khi vault đủ lớn |
 
 ---
 

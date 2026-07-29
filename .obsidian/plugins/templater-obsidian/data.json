@@ -15,8 +15,8 @@
   "enable_folder_templates": true,
   "folder_templates": [
     {
-      "folder": "",
-      "template": ""
+      "folder": "20_Knowledge",
+      "template": "40_Templates/Knowledge.md"
     }
   ],
   "enable_file_templates": false,

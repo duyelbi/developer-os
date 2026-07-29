@@ -71,17 +71,44 @@ Mở trang này mỗi ngày. Đọc trong 30 giây. Điều hướng. Làm việ
 
 ## 📌 Hôm nay
 
-> 🚧 Dashboard này sẽ được Dataview tự động tạo.
+### Active Project
 
-Hiện tại để trống.
+```dataview
+TABLE status AS "Status", created AS "Created"
+FROM "10_Projects"
+WHERE status = "Active"
+SORT created DESC
+```
 
-Sau này Dataview sẽ hiển thị:
+### Open Tasks
 
-- 📌 Active Project
-- 📌 Open Tasks
-- 📌 Recent Notes
-- 📌 Learning
-- 📌 Last Commit
+```dataview
+TASK
+FROM -"40_Templates" AND -"80_System"
+WHERE !completed
+LIMIT 20
+```
+
+### Recent Notes
+
+```dataview
+TABLE file.mtime AS "Modified"
+FROM -"40_Templates" AND -"80_System" AND -"99_Archive"
+SORT file.mtime DESC
+LIMIT 10
+```
+
+### Learning
+
+```dataview
+LIST
+FROM "70_Learning"
+SORT file.mtime DESC
+```
+
+### Last Commit
+
+Dataview không đọc được git log. Xem trực tiếp ở Obsidian Git — icon Source Control trên thanh bên trái, hoặc status bar dưới cùng (hiển thị commit gần nhất + số thay đổi chưa commit).
 
 ---
 
@@ -155,9 +182,8 @@ Mọi tài liệu dài thuộc về [[80_System]]. README chỉ là Home.
 | Phase 2 — Knowledge (chính sách) | ✅ (chờ nội dung thật) |
 | Phase 3 — AI Workspace | 🟡 (Prompts + Rules, còn lại chờ nội dung) |
 | Phase 4 — Projects (Sapo Invoice) | 🟡 (project + AI context migrate xong, ADR/Bug/SRS thật chưa chạy) |
-| Templates             | ⏳         |
-| Dashboard (Dataview)  | ⏳         |
-| Automation            | ⏳         |
+| Phase 5 — Dashboard (Dataview) | ✅ (query thật trong [[#📌 Hôm nay]]) |
+| Phase 6 — Automation | 🟡 (Templater cho Knowledge + git convention xong; hook/orphan review để mở) |
 
 ---
 
