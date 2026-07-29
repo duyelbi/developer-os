@@ -152,6 +152,7 @@ Mọi tài liệu dài thuộc về [[80_System]]. README chỉ là Home.
 | Metadata              | ✅         |
 | Workflow (chi tiết)   | ✅         |
 | Claude Operating Guide | ✅         |
+| Phase 2 — Knowledge (chính sách) | ✅ (chờ nội dung thật) |
 | Templates             | ⏳         |
 | Dashboard (Dataview)  | ⏳         |
 | Automation            | ⏳         |

@@ -637,12 +637,12 @@ Nguyên tắc roadmap: **nền trước, thực thi sau, tự động hóa cuố
 
 ### Phase 2 — Knowledge
 
-- Chuẩn hóa atomic note & linking
-- Quy tắc promote Learning/Projects → Knowledge
-- Phân domain Knowledge (nếu cần)
-- Dọn Inbox aging
+- ~~Chuẩn hóa atomic note & linking~~ — xong, xem `CONVENTION.md` §3 và §5
+- ~~Quy tắc promote Learning/Projects → Knowledge~~ — xong, xem `CONVENTION.md` §7.5
+- ~~Phân domain Knowledge (nếu cần)~~ — quyết định Flat mặc định, xem `CONVENTION.md` §9
+- ~~Dọn Inbox aging~~ — chính sách xong, xem `WORKFLOW.md` §2
 
-**Done khi:** Knowledge có thể dùng làm AI context đáng tin.
+**Done khi:** Knowledge có thể dùng làm AI context đáng tin. Chính sách đã đầy đủ; tiêu chí này chỉ đạt được qua sử dụng thực tế theo thời gian, không phải qua viết thêm tài liệu.
 
 ### Phase 3 — AI Workspace
 
@@ -733,6 +733,7 @@ Tài liệu này là nền để triển khai lần lượt: Convention → Meta
 | v2 | 2026-07-29 | Hợp nhất với bản thảo luận trong phiên: chính thức hóa phân biệt Content Module vs Capability Layer (§3.1); tách Information Lifecycle thành 3 loại Flow/Log/Reference-based (§7); bổ sung §5.4 đối chiếu hai lăng kính Layer và Content/Capability; thêm §12.3 ghi nhận quyết định đã chốt |
 | v2.1 | 2026-07-29 | Đổi tên thư mục `30_Prompts` → `30_AI` trong vault để khớp kiến trúc; cập nhật ghi chú chuyển tiếp ở §3 |
 | v2.2 | 2026-07-29 | Chốt Naming convention và Tag strategy (§12.3), chuyển từ Quyết định mở sang đã chốt; liên kết với `CONVENTION.md` mới viết |
+| v2.3 | 2026-07-29 | Đánh dấu Phase 2 — Knowledge: 3/4 mục đã xong từ Phase 1 (CONVENTION), mục còn lại (Inbox aging) xong qua WORKFLOW.md §2; ghi rõ tiêu chí "Done" của Phase 2 phụ thuộc sử dụng thực tế |
 
 ---
 

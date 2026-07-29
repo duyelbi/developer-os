@@ -9,13 +9,14 @@
 ## Mục lục
 
 1. [Luồng chính — Developer Workflow](#1-luồng-chính--developer-workflow)
-2. [Luồng phụ: Bug](#2-luồng-phụ-bug)
-3. [Luồng phụ: Decision (ADR)](#3-luồng-phụ-decision-adr)
-4. [Luồng phụ: Learning → Knowledge](#4-luồng-phụ-learning--knowledge)
-5. [Luồng phụ: Journal](#5-luồng-phụ-journal)
-6. [Checklist nhanh](#6-checklist-nhanh)
-7. [Còn để mở](#7-còn-để-mở)
-8. [Changelog](#8-changelog)
+2. [Inbox Aging](#2-inbox-aging)
+3. [Luồng phụ: Bug](#3-luồng-phụ-bug)
+4. [Luồng phụ: Decision (ADR)](#4-luồng-phụ-decision-adr)
+5. [Luồng phụ: Learning → Knowledge](#5-luồng-phụ-learning--knowledge)
+6. [Luồng phụ: Journal](#6-luồng-phụ-journal)
+7. [Checklist nhanh](#7-checklist-nhanh)
+8. [Còn để mở](#8-còn-để-mở)
+9. [Changelog](#9-changelog)
 
 ---
 
@@ -35,7 +36,20 @@ Mở rộng `ARCHITECTURE.md` §6.1 thành thao tác cụ thể theo từng bư�
 
 ---
 
-## 2. Luồng phụ: Bug
+## 2. Inbox Aging
+
+`00_Inbox` là buffer tạm, không phải kho lưu trữ (`ARCHITECTURE.md` §4.2) — cần review định kỳ để không biến thành nơi chất đống.
+
+- **Chu kỳ review:** hàng tuần (gợi ý gắn vào Journal cuối tuần — xem §6).
+- **Với mỗi item còn trong Inbox:**
+  - Đủ rõ để gắn vào một dự án/Knowledge/Learning cụ thể → promote ngay theo `CONVENTION.md` §7.5.
+  - Không còn giá trị (ý tưởng đã lỗi thời, trùng lặp) → xóa thẳng. Đây là **ngoại lệ duy nhất** được xóa thay vì archive (`ARCHITECTURE.md` §12.1: "Archive thay vì xóa, trừ nhiễu Inbox vô giá trị").
+  - Còn giá trị nhưng chưa đủ rõ để phân loại → giữ lại, không tính là "aging xấu" nếu vẫn đang được cân nhắc chủ động.
+- **Dấu hiệu cần xử lý ngay:** một item nằm quá 2-3 chu kỳ review liên tiếp (~2-3 tuần) mà không tiến triển — đây là tín hiệu nó cần được quyết định dứt khoát (promote hoặc xóa), không để trôi vô thời hạn.
+
+---
+
+## 3. Luồng phụ: Bug
 
 ```text
 Phát hiện bug → tạo Bug note (status: Open)
@@ -49,7 +63,7 @@ Phát hiện bug → tạo Bug note (status: Open)
 
 ---
 
-## 3. Luồng phụ: Decision (ADR)
+## 4. Luồng phụ: Decision (ADR)
 
 ```text
 Có quyết định kỹ thuật cần ghi nhớ → tạo Decision (status: Proposed)
@@ -61,7 +75,7 @@ Tiêu chí tạo Decision: quyết định ảnh hưởng lâu dài hoặc khó 
 
 ---
 
-## 4. Luồng phụ: Learning → Knowledge
+## 5. Luồng phụ: Learning → Knowledge
 
 ```text
 Đang học (70_Learning/) → thực hành trong Project hoặc qua AI
@@ -72,7 +86,7 @@ Tiêu chí tạo Decision: quyết định ảnh hưởng lâu dài hoặc khó 
 
 ---
 
-## 5. Luồng phụ: Journal
+## 6. Luồng phụ: Journal
 
 ```text
 Cuối ngày/tuần → ghi vào 60_Journal/YYYY-MM-DD.md
@@ -82,7 +96,7 @@ Cuối ngày/tuần → ghi vào 60_Journal/YYYY-MM-DD.md
 
 ---
 
-## 6. Checklist nhanh
+## 7. Checklist nhanh
 
 - Bắt đầu việc mới, chưa rõ thuộc đâu → ghi `00_Inbox`.
 - Bắt đầu một dự án/feature → `SRS.md` trong `10_Projects/<ten-du-an>/`.
@@ -90,21 +104,23 @@ Cuối ngày/tuần → ghi vào 60_Journal/YYYY-MM-DD.md
 - Gặp lỗi → `Bug.md`, gắn `project`.
 - Học được điều tái dùng được → `Knowledge.md`, không tag, tên file mô tả rõ.
 - Cuối ngày → `Journal`.
+- Cuối tuần → review `00_Inbox` (xem §2 — Inbox Aging).
 - Dự án/feature xong → rà soát promote Knowledge → chuyển vào `99_Archive/`.
 
 ---
 
-## 7. Còn để mở
+## 8. Còn để mở
 
 Workflow cho Career (review định kỳ) và AI asset improvement (`ARCHITECTURE.md` §6.4) chưa chi tiết hóa — chưa có đủ thực tế sử dụng để viết cụ thể hơn mức đã mô tả ở `ARCHITECTURE.md`. Bổ sung khi có nhu cầu thật (Evolutionary Design).
 
 ---
 
-## 8. Changelog
+## 9. Changelog
 
 | Phiên bản | Ngày | Thay đổi |
 |---|---|---|
 | v1 | 2026-07-29 | Bản đầu tiên: luồng chính chi tiết hóa từ ARCHITECTURE §6, luồng phụ Bug/Decision/Learning/Journal, checklist nhanh |
+| v1.1 | 2026-07-29 | Thêm §2 Inbox Aging: chu kỳ review hàng tuần, quy tắc xử lý item cũ, ngoại lệ xóa thay vì archive (Phase 2 Roadmap) |
 
 ---
 
