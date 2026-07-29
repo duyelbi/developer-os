@@ -60,7 +60,20 @@ Tôi (Duy) là developer tại Sapo, làm việc trên hệ thống **hoá đơn
 11. ✅ Ship
 ```
 
-Bug, quyết định kỹ thuật, bài học rút ra trong quá trình trên → ghi vào `10_Projects/sapo-invoice/` bằng template `Bug.md`/`Decision.md` (developer-os), không ghi rải rác nơi khác. Bài học đủ tổng quát cho dự án khác → promote sang [[20_Knowledge]] hoặc [[30_AI/Rules/senior-engineering-practices]].
+Bug, quyết định kỹ thuật, bài học rút ra trong quá trình trên → ghi vào `10_Projects/sapo-invoice/` bằng template `Bug.md`/`Decision.md` (developer-os), không ghi rải rác nơi khác — xem cách lưu chủ động ở mục dưới. Bài học đủ tổng quát cho dự án khác → promote sang [[20_Knowledge]] hoặc [[30_AI/Rules/senior-engineering-practices]].
+
+## Lưu Bug/Decision — chủ động, không chờ Duy làm thủ công
+
+Duy không muốn phải tự mở Obsidian hay vào repo `developer-os` để lưu lại — Claude/Cursor tự làm việc này:
+
+1. Ngay sau khi xác nhận đã fix xong một bug, hoặc vừa chốt một quyết định kỹ thuật đáng nhớ (tiêu chí ở `WORKFLOW.md` §3/§4) → đề xuất ngắn gọn, vd *"Lưu bug này vào developer-os nhé?"*. Nếu ngữ cảnh đã rõ ràng (Duy đã nói kiểu "nhớ lưu lại"), không cần hỏi lại, làm luôn.
+2. Sau khi Duy xác nhận (hoặc không phản đối) → **tự tạo file trực tiếp**, không yêu cầu Duy làm tay:
+   - Path: `/Users/sapo/developer-os/10_Projects/sapo-invoice/<ten-file-kebab-case>.md` (đặt phẳng, không vào subfolder `ai/` — `ai/` chỉ chứa rules/prompt, không chứa Bug/Decision instance)
+   - Tên file: mô tả ngắn gọn nội dung, kebab-case (`CONVENTION.md` §2) — vd `invoice-tenant-id-race-condition.md`
+   - Frontmatter đúng schema `METADATA.md`: `Bug.md` cần `created`, `status`, `priority` (tuỳ), `project: "[[10_Projects/sapo-invoice/README]]"`; `Decision.md` cần `created`, `status`
+3. Báo ngắn gọn đã lưu ở đâu sau khi tạo xong — không cần Duy xác nhận lại lần hai.
+
+**Điều kiện kỹ thuật:** Claude Code chạy trong repo khác (`invoice-app`, `sapo-invoice-admin-frontend`...) cần quyền ghi ra ngoài project root của repo đó. Đã cấu hình bằng `permissions.additionalDirectories: ["/Users/sapo/developer-os"]` trong `.claude/settings.local.json` của từng repo. Nếu Claude Code vẫn hỏi xác nhận ghi file mỗi lần, kiểm tra lại file này còn đúng cấu hình không.
 
 ## Khi tôi hỏi về planning/analysis
 
@@ -100,7 +113,7 @@ Severity: 🔴 Critical (blocker) / 🟡 Major (should fix) / 🟢 Minor (nice t
 - 2-3 fix options với effort + risk tradeoffs
 - Cursor-ready implementation instructions
 - Regression tests cần chạy sau fix
-- Ghi lại vào `Bug.md` trong `10_Projects/sapo-invoice/` (xem Workflow ở trên)
+- Tự tạo `Bug.md` trong `10_Projects/sapo-invoice/` sau khi fix xong và xác nhận — xem mục "Lưu Bug/Decision" ở trên, không chờ Duy làm tay
 
 ## Conventions quan trọng
 
