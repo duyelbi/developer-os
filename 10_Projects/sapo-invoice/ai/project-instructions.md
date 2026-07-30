@@ -60,17 +60,20 @@ Tôi (Duy) là developer tại Sapo, làm việc trên hệ thống **hoá đơn
 11. ✅ Ship
 ```
 
+**Release `invoice-app` staging → master:** không tự merge/đề xuất merge master chỉ vì staging build xanh — cần tester + BA duyệt trên staging trước, leader mới là người merge. Bug trên staging → sửa ở feature branch gốc rồi lên lại staging (MR mới hoặc merge thẳng). Chi tiết: [[10_Projects/sapo-invoice/invoice-app-staging-master-release-flow]].
+
 Bug, quyết định kỹ thuật, bài học rút ra trong quá trình trên → ghi vào `10_Projects/sapo-invoice/` bằng template `Bug.md`/`Decision.md` (developer-os), không ghi rải rác nơi khác — xem cách lưu chủ động ở mục dưới. Bài học đủ tổng quát cho dự án khác → promote sang [[20_Knowledge/README|20_Knowledge]] hoặc [[30_AI/Rules/senior-engineering-practices]].
 
-## Lưu Bug/Decision — chủ động, không chờ Duy làm thủ công
+## Lưu artifact lâu dài — chủ động, không chờ Duy làm thủ công
 
-Duy không muốn phải tự mở Obsidian hay vào repo `developer-os` để lưu lại — Claude/Cursor tự làm việc này:
+Duy không muốn phải tự mở Obsidian hay vào repo `developer-os` để lưu lại — Claude/Cursor tự làm việc này. Áp dụng cho **mọi thứ đáng giữ lâu dài**, không chỉ Bug/Decision: implementation plan/spec (đặc biệt task không có SRS chính thức từ BA — xem mục "Docs" ở trên), root-cause analysis, kết quả research kỹ thuật, prompt Cursor gắn liền với 1 plan cụ thể. Mặc định: **không để các file này ở scratchpad/tmp hay chỉ tồn tại trong chat** — lưu vào `developer-os` ngay khi nội dung đã đủ ổn định để tham chiếu lại sau.
 
-1. Ngay sau khi xác nhận đã fix xong một bug, hoặc vừa chốt một quyết định kỹ thuật đáng nhớ (tiêu chí ở `WORKFLOW.md` §3/§4) → đề xuất ngắn gọn, vd *"Lưu bug này vào developer-os nhé?"*. Nếu ngữ cảnh đã rõ ràng (Duy đã nói kiểu "nhớ lưu lại"), không cần hỏi lại, làm luôn.
+1. Ngay sau khi xác nhận đã fix xong một bug, chốt một quyết định kỹ thuật đáng nhớ (tiêu chí ở `WORKFLOW.md` §3/§4), hoặc vừa hoàn thiện một implementation plan/spec đủ chi tiết để đưa cho Cursor implement → đề xuất ngắn gọn, vd *"Lưu vào developer-os nhé?"*. Nếu ngữ cảnh đã rõ ràng (Duy đã nói kiểu "nhớ lưu lại", "lưu lâu dài"), không cần hỏi lại, làm luôn.
 2. Sau khi Duy xác nhận (hoặc không phản đối) → **tự tạo file trực tiếp**, không yêu cầu Duy làm tay:
-   - Path: `/Users/sapo/developer-os/10_Projects/sapo-invoice/<ten-file-kebab-case>.md` (đặt phẳng, không vào subfolder `ai/` — `ai/` chỉ chứa rules/prompt, không chứa Bug/Decision instance)
-   - Tên file: mô tả ngắn gọn nội dung, kebab-case (`CONVENTION.md` §2) — vd `invoice-tenant-id-race-condition.md`
-   - Frontmatter đúng schema `METADATA.md`: `Bug.md` cần `created`, `status`, `priority` (tuỳ), `project: "[[10_Projects/sapo-invoice/README]]"`; `Decision.md` cần `created`, `status`
+   - Path: `/Users/sapo/developer-os/10_Projects/sapo-invoice/<ten-file-kebab-case>.md` (đặt phẳng, không vào subfolder `ai/` — `ai/` chỉ chứa rules/prompt, không chứa instance Bug/Decision/Plan)
+   - Tên file: mô tả ngắn gọn nội dung, kebab-case (`CONVENTION.md` §2) — vd `invoice-tenant-id-race-condition.md`, `epic-65-auto-invoice-order-name.md`
+   - Frontmatter đúng schema `METADATA.md`: `Bug.md` cần `created`, `status`, `priority` (tuỳ), `project: "[[10_Projects/sapo-invoice/README]]"`; `Decision.md` cần `created`, `status`; implementation plan/spec không có SRS chính thức → dùng schema `SRS.md` (`created`, `status: Draft|Approved|Implemented`), có thể kèm `project` cho nhất quán.
+   - Prompt Cursor gắn liền với 1 plan cụ thể (không phải rule/prompt tái sử dụng nhiều task) → gộp làm 1 section trong cùng note với plan đó (nguyên tắc Atomic Notes: đây vẫn là cùng một khái niệm), không tạo file riêng.
 3. Báo ngắn gọn đã lưu ở đâu sau khi tạo xong — không cần Duy xác nhận lại lần hai.
 
 **Điều kiện kỹ thuật:** Claude Code chạy trong repo khác (`invoice-app`, `sapo-invoice-admin-frontend`...) cần quyền ghi ra ngoài project root của repo đó. Đã cấu hình bằng `permissions.additionalDirectories: ["/Users/sapo/developer-os"]` trong `.claude/settings.local.json` của từng repo. Nếu Claude Code vẫn hỏi xác nhận ghi file mỗi lần, kiểm tra lại file này còn đúng cấu hình không.

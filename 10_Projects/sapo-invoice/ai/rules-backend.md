@@ -219,6 +219,7 @@ return Collections.unmodifiableList(items);      // trả về từ domain
 - Test: `./gradlew test`
 - Build: `./gradlew build`
 - Docker: `./gradlew jib` (không cần Docker daemon)
+- Tên method Java, kể cả method `@Test`, dùng lowerCamelCase và khớp SonarQube `^[a-z][a-zA-Z0-9]*$`; không đặt tên kiểu `method_condition_expected`.
 
 ---
 

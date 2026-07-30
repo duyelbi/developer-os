@@ -48,6 +48,10 @@ Trước khi thực hiện một tác vụ, xác định loại tác vụ trư�
 
 Khi review, luôn tham chiếu file + dòng cụ thể, và đưa code đã sửa thay vì chỉ mô tả vấn đề bằng lời — giảm vòng lặp qua lại không cần thiết.
 
+## 8. Không conflict marker ≠ merge đúng — luôn build lại sau merge
+
+Git 3-way merge tự động (không báo conflict) vẫn có thể tạo ra kết quả sai — ví dụ 2 nhánh cùng thêm 1 dòng gần giống nhau (như cùng thêm 1 field injection) ở vị trí khác nhau, git giữ lại cả hai vì không thấy trùng dòng, gây lỗi biên dịch mà không hề có conflict marker nào. Sau bất kỳ merge nào (kể cả khi git báo "Auto-merging" thành công), luôn build/test lại toàn bộ, không chỉ tin vào việc không còn `<<<<<<<`. Chi tiết ca thực tế và cách xử lý: [[10_Projects/sapo-invoice/merge-feature-branch-vao-staging-truoc-master]].
+
 ---
 
 ## Nguồn gốc & cách cập nhật
