@@ -37,11 +37,22 @@ Phần chưa migrate (thư viện prompt theo bước, template `SELFTEST_CHECKL
 - **Quyết định kỹ thuật (ADR) và Bug cụ thể của dự án này:** ghi trực tiếp trong `10_Projects/sapo-invoice/` bằng template `Decision.md`/`Bug.md` — không ghi rải rác ở `ai-workspace` hay `invoice-docs` nữa.
 - Bài học đủ tổng quát cho dự án khác → promote sang [[20_Knowledge/README|20_Knowledge]] hoặc [[30_AI/Rules/senior-engineering-practices]].
 
+## Note của dự án
+
+| Note | Nội dung |
+|---|---|
+| [[10_Projects/sapo-invoice/refactor-frontend-performance]] | Refactor `sapo-invoice-admin-frontend`: nguyên nhân gốc của duplicate call + waterfall, giải pháp từng hạng mục, đánh giá SSR |
+| [[10_Projects/sapo-invoice/refactor-playbook-theo-man-hinh]] | Cách thực thi refactor đó theo slice dọc: lõi ngang không cắt được, 5 khuôn màn hình, checklist per-slice, thứ tự màn hình |
+| [[10_Projects/sapo-invoice/migrate-ui-components-sang-design-system]] | ADR: `@sapo/ui-components` → `@sapo-finance/components` |
+| [[10_Projects/sapo-invoice/invoice-app-staging-master-release-flow]] | Quy trình release staging → master |
+| [[10_Projects/sapo-invoice/merge-feature-branch-vao-staging-truoc-master]] | Chiều merge feature branch |
+| [[10_Projects/sapo-invoice/epic-65-auto-invoice-order-name]] | Epic 65 |
+
 ## Liên kết
 
 - Entry point AI cho toàn bộ workspace ngoài vault: `/Users/sapo/invoice/AGENTS.md`
 - Nguyên tắc AI tổng quát (nhiều dự án): [[30_AI/Rules/senior-engineering-practices]]
-- Thư viện UI dùng chung (đang migrate tới): [[10_Projects/design-system/README]] — xem quyết định [[10_Projects/sapo-invoice/migrate-ui-components-sang-design-system]]
+- Thư viện UI dùng chung (đang migrate tới): [[10_Projects/design-system/README]] — độ phủ DS ↔ nhu cầu invoice: [[10_Projects/design-system/audit-coverage-invoice]]
 
 ## Ghi chú
 

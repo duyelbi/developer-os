@@ -35,6 +35,12 @@ developer-os ở đây chỉ giữ: quyết định kỹ thuật, bug, bài họ
 
 `@sapo/ui-components` (dùng trong `rules-frontend.md` của Sapo Invoice) là thư viện UI **cũ**, riêng của Invoice. `@sapo-finance/components` (package chính của repo này) là thư viện **mới**, dùng chung cho nhiều service Sapo Finance — mục tiêu tối ưu và đồng bộ hơn giữa các service của công ty. Sapo Invoice đang migrate dần sang thư viện này — xem quyết định: `10_Projects/sapo-invoice/migrate-ui-components-sang-design-system.md`.
 
+## Note của dự án
+
+| Note | Nội dung |
+|---|---|
+| [[10_Projects/design-system/audit-coverage-invoice]] | Audit độ phủ DS ↔ nhu cầu thật của invoice: backlog DS xếp theo trọng số sử dụng, kết luận React 19, thứ tự migrate |
+
 ## Liên kết
 
-- Bên tiêu thụ chính: [[10_Projects/sapo-invoice/README]]
+- Bên tiêu thụ chính: [[10_Projects/sapo-invoice/README]] — kế hoạch refactor: [[10_Projects/sapo-invoice/refactor-frontend-performance]]

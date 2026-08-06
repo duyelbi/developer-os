@@ -1,0 +1,18 @@
+diff --git a/src/pages/invoice/components/modal/InvoiceImportModal.tsx b/src/pages/invoice/components/modal/InvoiceImportModal.tsx
+index b55e5558..cf4a908c 100644
+--- a/src/pages/invoice/components/modal/InvoiceImportModal.tsx
++++ b/src/pages/invoice/components/modal/InvoiceImportModal.tsx
+@@ -253,9 +253,13 @@ export const InvoiceImportModal = ({ onClose }: Props) => {
+                 <StyledLinkDownloadFile>
+                   <Icon source={DownloadIcon} color="interactive" />
+                   <StyledLink>
++                    {/* CHỈ ĐỂ TEST LOCAL — KHÔNG COMMIT dòng target bên dưới.
++                        LinkComponent.tsx:27 có {...rest} đứng sau target nên đè mất "_blank" mà external vừa tính,
++                        khiến react-router chặn click và điều hướng về home thay vì tải file. */}
+                     <Link
+                       removeUnderline
+                       external
++                      target="_blank"
+                       url={getDownloadSampleLink(fieldValues.invoiceImportType, fieldValues.automaticallyCalculate)}
+                     >
+                       Tải file dữ liệu mẫu
