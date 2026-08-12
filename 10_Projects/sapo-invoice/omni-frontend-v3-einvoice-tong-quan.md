@@ -77,7 +77,7 @@ components/  EInvoiceBulkPublish, EInvoiceQuickFilter, EInvoiceOtherFilter,
              DialogAutoInvoiceResults, DialogEInvoiceDecreeNotice, WarningBanner
 ```
 
-`DialogAutoInvoiceResults` là UI của [[10_Projects/sapo-invoice/epic-65-auto-invoice-order-name|Epic #65]].
+`DialogAutoInvoiceResults` là UI của [[10_Projects/sapo-invoice/epic-65-auto-invoice-order-name/epic-65-auto-invoice-order-name|Epic #65]].
 
 ## API surface — `src/services/EinvoiceService/EInvoiceService.ts`
 

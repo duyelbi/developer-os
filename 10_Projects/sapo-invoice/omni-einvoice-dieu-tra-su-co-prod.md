@@ -90,4 +90,4 @@ Tóm tắt → Điều tra (query rút gọn + số liệu + trích `path:line`)
 ## Liên kết
 
 - [[10_Projects/sapo-invoice/omni-einvoice-service-tong-quan]]
-- [[10_Projects/sapo-invoice/epic-65-auto-invoice-order-name]] — UI hiển thị đơn thất bại trong popup Auto Invoice
+- [[10_Projects/sapo-invoice/epic-65-auto-invoice-order-name/epic-65-auto-invoice-order-name]] — UI hiển thị đơn thất bại trong popup Auto Invoice

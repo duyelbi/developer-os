@@ -7,7 +7,7 @@ project: "[[10_Projects/sapo-invoice/README]]"
 
 # Prompt Cursor — implement Epic #61 (phí vận chuyển trên hóa đơn V2, SRS v0.6)
 
-Plan/SRS đầy đủ: [[10_Projects/sapo-invoice/epic-61-phi-van-chuyen-hoa-don-v2]] · SRS gốc đã cập nhật: `invoice-docs!105` (v0.6)
+Plan/SRS đầy đủ: [[epic-61-phi-van-chuyen-hoa-don-v2]] · SRS gốc đã cập nhật: `invoice-docs!105` (v0.6)
 
 ⚠️ **Chưa giải quyết B0 (shape `order.delivery_fee`)** trước khi chạy prompt này — SRS v0.6 KHÔNG đề cập vấn đề này (nó về 2 điểm khác — tên dòng phí + checkbox điều chỉnh). B0 vẫn cần xác nhận riêng với BA/Omni. Phần Backend A5 đã viết theo shape hiện tại (object đơn) kèm TODO rõ ràng.
 
@@ -22,7 +22,7 @@ Workspace: `/Users/sapo/invoice` — làm việc trên 2 repo:
 - `sapo-einvoice-service` (Java 11 / Spring Boot 2.1, Maven, SQL Server)
 - `sapo-frontend-v3` (React 16 + TS, Webpack 5, Node 14/24)
 
-Epic gốc: GitLab `&61` (group sapo-money/sapo-invoice, module `invoice-core-v2`) · SRS v0.6 đầy đủ: developer-os `10_Projects/sapo-invoice/epic-61-phi-van-chuyen-hoa-don-v2.md`
+Epic gốc: GitLab `&61` (group sapo-money/sapo-invoice, module `invoice-core-v2`) · SRS v0.6 đầy đủ: developer-os `10_Projects/sapo-invoice/epic-61-phi-van-chuyen-hoa-don-v2/epic-61-phi-van-chuyen-hoa-don-v2.md`
 
 ## Đọc trước khi code
 

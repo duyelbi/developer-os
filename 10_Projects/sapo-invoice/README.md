@@ -56,14 +56,14 @@ Phần chưa migrate (thư viện prompt theo bước, template `SELFTEST_CHECKL
 | [[10_Projects/sapo-invoice/migrate-ui-components-sang-design-system]] | ADR: `@sapo/ui-components` → `@sapo-finance/components` |
 | [[10_Projects/sapo-invoice/invoice-app-staging-master-release-flow]] | Quy trình release staging → master |
 | [[10_Projects/sapo-invoice/merge-feature-branch-vao-staging-truoc-master]] | Chiều merge feature branch |
-| [[10_Projects/sapo-invoice/epic-65-auto-invoice-order-name]] | Epic 65 |
+| [[10_Projects/sapo-invoice/epic-65-auto-invoice-order-name/epic-65-auto-invoice-order-name\|Epic 65]] | Epic 65 |
 | [[10_Projects/sapo-invoice/qr-quiet-zone-80-tren-100]] | Mã QR thanh toán: tăng quiet zone (QR thật 80×80 trong ảnh 100×100) — chưa sửa code |
 | [[10_Projects/sapo-invoice/omni-einvoice-service-tong-quan]] | `sapo-einvoice-service`: kiến trúc, 4 provider, luồng chính, quy tắc code, nợ kỹ thuật; cảnh báo DB là SQL Server chứ không phải PostgreSQL như docs trong repo ghi |
 | [[10_Projects/sapo-invoice/omni-frontend-v3-einvoice-tong-quan]] | `sapo-frontend-v3`: stack cũ (React 16/Webpack/Node 14), cách nối backend, page `EInvoice`, API surface, luồng QR công khai, CI theo tên branch |
 | [[10_Projects/sapo-invoice/omni-einvoice-dieu-tra-su-co-prod]] | Điều tra auto-invoice trên prod: mapping shard theo `tenantId`, quy tắc UTC, 9 gate chặn xuất hóa đơn, cạm bẫy `received_status` |
 | [[10_Projects/sapo-invoice/omni-chay-local-service-va-frontend]] | Chạy local `sapo-frontend-v3` với BE staging (mô hình thực tế của team): host `phuongnt-dev2.mysapo.vn:4200`, FE chạy tốt trên Node 24 dù Volta ghim 14, cần hosts entry + HTTPS; phụ lục cách dựng service local nếu phải debug backend |
-| [[10_Projects/sapo-invoice/epic-61-phi-van-chuyen-hoa-don-v2]] | Epic phí vận chuyển hóa đơn V2: module `invoice-core-v2` (group sapo-money/sapo-invoice) thực ra code ở `sapo-einvoice-service`/`sapo-frontend-v3`; SRS giả định `delivery_fee` là mảng nhưng code là object đơn — cần hỏi lại BA trước khi code |
-| [[10_Projects/sapo-invoice/epic-61-cursor-prompt-implement]] | Prompt Cursor implement epic #61 — đã đọc code thật, có số dòng chính xác chỗ chèn logic (`setOrderData` dòng 2057-2061), chưa chạy |
+| [[10_Projects/sapo-invoice/epic-61-phi-van-chuyen-hoa-don-v2/epic-61-phi-van-chuyen-hoa-don-v2\|Epic 61 — SRS]] | Epic phí vận chuyển hóa đơn V2: module `invoice-core-v2` (group sapo-money/sapo-invoice) thực ra code ở `sapo-einvoice-service`/`sapo-frontend-v3`; SRS giả định `delivery_fee` là mảng nhưng code là object đơn — cần hỏi lại BA trước khi code |
+| [[10_Projects/sapo-invoice/epic-61-phi-van-chuyen-hoa-don-v2/epic-61-cursor-prompt-implement\|Epic 61 — Cursor prompt]] | Prompt Cursor implement epic #61 — đã đọc code thật, có số dòng chính xác chỗ chèn logic (`setOrderData` dòng 2057-2061), chưa chạy |
 
 ## Liên kết
 

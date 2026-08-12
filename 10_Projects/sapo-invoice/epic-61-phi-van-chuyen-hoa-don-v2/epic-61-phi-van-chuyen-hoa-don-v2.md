@@ -248,7 +248,7 @@ Quá trình dẫn tới SRS v0.6 — giữ lại để hiểu bối cảnh, khô
 ## Liên kết
 
 - MR SRS v0.6: `https://git.dktsoft.com:2008/sapo-money/sapo-invoice/invoice-docs/-/merge_requests/105`
-- [[10_Projects/sapo-invoice/epic-61-cursor-prompt-implement]] — prompt Cursor, đã cập nhật theo v0.6
+- [[epic-61-cursor-prompt-implement]] — prompt Cursor, đã cập nhật theo v0.6
 - [[10_Projects/sapo-invoice/omni-einvoice-service-tong-quan]]
 - [[10_Projects/sapo-invoice/omni-frontend-v3-einvoice-tong-quan]]
 - Bản gốc SRS (lịch sử, không còn là nguồn chính): `invoice-docs/docs/invoice-core-v2/phi-van-chuyen-hoa-don/srs.md`
