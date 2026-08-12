@@ -1,6 +1,6 @@
 ---
 created: 2026-08-06 10:30
-updated: 2026-08-06 (gom vào thư mục epic-62-cccd, link + verify bộ file test)
+updated: 2026-08-07 (rà soát gap SRS; S5 sẽ tự đóng ở đợt 2)
 status: Ready for QA
 project: "[[10_Projects/sapo-invoice/README]]"
 ---
@@ -37,7 +37,7 @@ Sai → lỗi dòng, message nguyên văn: **`Căn cước công dân không đ�
 
 Ô mẫu dòng 4 trong file BA giao sẵn giá trị `001099001234`, định dạng **Text (`@`)**.
 
-> 🚨 **BUG FILE MẪU — phải báo BA, ảnh hưởng người dùng thật.** File mẫu BA giao **chỉ định dạng Text cho vài dòng đầu**, phần còn lại của cột là General:
+> ⚠️ **GIỚI HẠN ĐÃ BIẾT — chốt 07/08/2026: KHÔNG sửa, để người dùng tự xử lý.** File mẫu **chỉ định dạng Text cho vài dòng đầu**, phần còn lại của cột là General:
 >
 > | Template | Cột | Text ở dòng | Style mặc định cả cột | Từ dòng này trở đi **mất số 0 đầu** |
 > | -------- | --- | ----------- | --------------------- | ----------------------------------- |
@@ -45,13 +45,17 @@ Sai → lỗi dòng, message nguyên văn: **`Căn cước công dân không đ�
 > | AI       | H   | 4–**8**     | General               | **9**                               |
 > | AL       | K   | 4–**8**     | General               | **9**                               |
 >
-> Kế toán import 20–100 hóa đơn sẽ nhập từ dòng 9 trở đi và **mất số 0 hàng loạt mà không biết** — trên Excel nhìn vẫn bình thường, chỉ đến khi nhận email lỗi mới phát hiện, và sẽ rất khó hiểu vì sao 5 dòng đầu thì được còn từ dòng 6 thì không.
+> Kế toán import nhiều hóa đơn sẽ nhập từ dòng 8 trở đi và **mất số 0** — trên Excel nhìn vẫn bình thường, chỉ đến khi nhận email lỗi *"Căn cước công dân không đúng định dạng"* mới phát hiện.
 >
-> **Đề nghị BA sửa file mẫu:** đặt định dạng Text cho **cả cột** CCCD (hoặc tối thiểu tới dòng 1000). Đây là sửa file `.xlsx`, không phải sửa code — nhưng **phải xong trước khi uplive**.
+> **Quyết định:** không sửa file mẫu ở đợt này. Người dùng tự format cột CCCD thành Text trước khi nhập. Hệ thống **báo lỗi rõ ràng** khi số 0 bị cắt, nên dữ liệu sai không lọt xuống DB — đây là lý do chấp nhận được.
 >
-> Nên kiểm luôn cột **"Số điện thoại"** và **"Mã số thuế người mua"** — cũng cần giữ số 0 đầu, nếu bị giới hạn vùng tương tự thì đó là lỗi có sẵn từ trước, không phải do task này.
+> **Hướng dẫn cho người dùng / CS:** bấm vào **chữ cái đầu cột** (chọn cả cột — không phải bôi đen vài ô) → `Cmd/Ctrl + 1` → **Text** → *rồi mới gõ*. Format sau khi gõ **không** khôi phục được số 0 đã mất, phải nhập lại. Cách nhanh cho vài ô lẻ: gõ dấu nháy đơn phía trước, ví dụ `'001099001234`.
 >
-> ⚠️ **Với QA:** bộ file test trong [`files/`](files/) đã được dựng bằng script nên **không dính lỗi này** (mọi dòng đều `@Text`). Nhưng nếu bạn **tự thêm dòng mới** vào các file đó, hoặc dựng file mới từ mẫu tải về, thì phải format cột thành Text **trước khi gõ**.
+> ❌ **Đừng dùng Custom format `000000000000`** — chỉ đệm số 0 khi hiển thị, giá trị thật vẫn là số, import vẫn lỗi.
+>
+> Cột **"Số điện thoại"** và **"Mã số thuế người mua"** nhiều khả năng cũng bị tương tự (đều cần giữ số 0 đầu) — lỗi có sẵn từ trước, không thuộc task này.
+>
+> ✅ **Với QA:** bộ file test trong [`files/`](files/) dựng bằng script nên **không dính lỗi này** (mọi dòng đều `@Text`). Nhưng nếu **tự thêm dòng mới** vào các file đó, hoặc dựng file mới từ mẫu tải về, thì phải format cột thành Text **trước khi gõ**.
 
 ---
 
@@ -62,27 +66,27 @@ Sai → lỗi dòng, message nguyên văn: **`Căn cước công dân không đ�
 
 Điền "Ký hiệu\*" ở mọi dòng để mỗi dòng thành một hóa đơn riêng. Dòng hợp lệ sẽ import, dòng lỗi bị bỏ và liệt kê trong email báo cáo.
 
-| #   | Dòng Excel | Gõ vào ô CCCD                                    | Kỳ vọng                                                               |
-| --- | ---------- | ------------------------------------------------ | --------------------------------------------------------------------- |
-| V1  | 4          | _(để trống)_                                     | ✅ Import OK · `id_number = NULL`                                     |
-| V2  | 5          | `001099001234`                                   | ✅ OK — ca chuẩn (001 = Hà Nội)                                       |
-| V3  | 6          | `096099001234`                                   | ✅ OK                                                                 |
-| V4  | 7          | `079123456789`                                   | ✅ OK — 079 = TP.HCM                                                  |
-| V5  | 8          | `012345678901`                                   | ✅ OK                                                                 |
-| V6  | 9          | `099099001234`                                   | ✅ OK — chỉ cần bắt đầu bằng `0`, **không** kiểm mã tỉnh              |
-| V7  | 10         | `000000000000`                                   | ✅ OK — số vô nghĩa nhưng vẫn khớp luật, đây là giới hạn đã biết      |
-| V8  | 11         | `001099001234` _(1 dấu cách trước và sau)_       | ✅ OK — hệ thống trim · DB lưu **không** kèm dấu cách                 |
-| V9  | 12         | `   ` _(chỉ dấu cách)_                           | ✅ OK · `id_number = NULL` — coi như để trống                         |
-| E1  | 13         | `00109900123` _(11 số)_                          | ❌ Lỗi dòng                                                           |
-| E2  | 14         | `0010990012345` _(13 số)_                        | ❌ Lỗi dòng                                                           |
-| E3  | 15         | `00109900123a`                                   | ❌ Lỗi dòng                                                           |
-| E4  | 16         | `0010-9900-1234`                                 | ❌ Lỗi dòng                                                           |
-| E5  | 17         | `001 099 001234` _(dấu cách ở giữa)_             | ❌ Lỗi dòng                                                           |
-| E6  | 18         | `００１０９９００１２３４` _(chữ số full-width)_ | ❌ Lỗi dòng                                                           |
-| E7  | 19         | `101099001234`                                   | ❌ Không bắt đầu bằng `0`                                             |
-| E8  | 20         | `112345678901`                                   | ❌ Không bắt đầu bằng `0`                                             |
-| E9  | 21         | `999999999999`                                   | ❌ Không bắt đầu bằng `0`                                             |
-| E10 | 22         | `840123456789`                                   | ❌ Bị chặn — mã quốc gia Hoa Kỳ, xem "Hạn chế đã biết" ở đầu tài liệu |
+| #   | Dòng Excel | Gõ vào ô CCCD                              | Kỳ vọng                                                              |
+| --- | ---------- | ------------------------------------------ | -------------------------------------------------------------------- |
+| V1  | 4          | _(để trống)_                               | ✅ Import OK · `id_number = NULL`                                     |
+| V2  | 5          | `001099001234`                             | ✅ OK — ca chuẩn (001 = Hà Nội)                                       |
+| V3  | 6          | `096099001234`                             | ✅ OK                                                                 |
+| V4  | 7          | `079123456789`                             | ✅ OK — 079 = TP.HCM                                                  |
+| V5  | 8          | `012345678901`                             | ✅ OK                                                                 |
+| V6  | 9          | `099099001234`                             | ✅ OK — chỉ cần bắt đầu bằng `0`, **không** kiểm mã tỉnh              |
+| V7  | 10         | `000000000000`                             | ✅ OK — số vô nghĩa nhưng vẫn khớp luật, đây là giới hạn đã biết      |
+| V8  | 11         | `001099001234` _(1 dấu cách trước và sau)_ | ✅ OK — hệ thống trim · DB lưu **không** kèm dấu cách                 |
+| V9  | 12         | `   ` _(chỉ dấu cách)_                     | ✅ OK · `id_number = NULL` — coi như để trống                         |
+| E1  | 13         | `00109900123` _(11 số)_                    | ❌ Lỗi dòng                                                           |
+| E2  | 14         | `0010990012345` _(13 số)_                  | ❌ Lỗi dòng                                                           |
+| E3  | 15         | `00109900123a`                             | ❌ Lỗi dòng                                                           |
+| E4  | 16         | `0010-9900-1234`                           | ❌ Lỗi dòng                                                           |
+| E5  | 17         | `001 099 001234` _(dấu cách ở giữa)_       | ❌ Lỗi dòng                                                           |
+| E6  | 18         | `００１０９９００１２３４` _(chữ số full-width)_       | ❌ Lỗi dòng                                                           |
+| E7  | 19         | `101099001234`                             | ❌ Không bắt đầu bằng `0`                                             |
+| E8  | 20         | `112345678901`                             | ❌ Không bắt đầu bằng `0`                                             |
+| E9  | 21         | `999999999999`                             | ❌ Không bắt đầu bằng `0`                                             |
+| E10 | 22         | `840123456789`                             | ❌ Bị chặn — mã quốc gia Hoa Kỳ, xem "Hạn chế đã biết" ở đầu tài liệu |
 
 Kiểm ở email báo cáo: **10 dòng lỗi** (E1–E10 = dòng Excel 13–22), mỗi dòng có `Hàng {n}: Căn cước công dân không đúng định dạng`, và **số hàng trỏ đúng dòng Excel** tương ứng.
 
@@ -128,11 +132,11 @@ CCCD là cột **cấp hóa đơn** → chỉ đọc ở **dòng mở đầu hó
 
 | #      | File                                                                                          | Sửa gì trên file · đã verify cấu trúc                                       | Kỳ vọng                                                                                                                                                      |
 | ------ | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| S1     | [04-AD-S1-file-mau-cu-khong-co-cot-cccd.xlsx](files/04-AD-S1-file-mau-cu-khong-co-cot-cccd.xlsx) | Không có tiêu đề "Căn cước công dân" · cột cuối lùi về **AD1**                | ❌ _Nhập file thất bại — Không thể thực hiện hành động này: File nhập không đúng template_                                                                   |
+| S1     | [04-AD-S1-file-mau-cu-khong-co-cot-cccd.xlsx](files/04-AD-S1-file-mau-cu-khong-co-cot-cccd.xlsx) | Không có tiêu đề "Căn cước công dân" · cột cuối lùi về **AD1**                | ❌ _Nhập file thất bại — Không thể thực hiện hành động này: File nhập không đúng mẫu. Vui lòng kiểm tra lại lựa chọn tự động tính toán và thực hiện tải lại file mẫu._                                                                   |
 | S2     | [05-AD-S2-xoa-cot-cccd.xlsx](files/05-AD-S2-xoa-cot-cccd.xlsx)                                  | Giống S1                                                                      | ❌ Như S1                                                                                                                                                    |
-| S3     | [06-AD-S3-doi-ten-tieu-de-cccd.xlsx](files/06-AD-S3-doi-ten-tieu-de-cccd.xlsx)                  | `H2` đổi thành `CCCD` · cột cuối vẫn **AE1**                                  | ❌ Bị chặn                                                                                                                                                   |
+| S3     | [06-AD-S3-doi-ten-tieu-de-cccd.xlsx](files/06-AD-S3-doi-ten-tieu-de-cccd.xlsx)                  | `H2` đổi thành `CCCD` · cột cuối vẫn **AE1**                                  | ❌ **Cùng message với S1/S2**: _File nhập không đúng mẫu. Vui lòng kiểm tra lại lựa chọn tự động tính toán và thực hiện tải lại file mẫu._. ⚠️ SRS ghi phải ra *"Tên cột {Tên cột} không hợp lệ"* — **message đó KHÔNG tồn tại trong code** (grep BE+FE = 0 hit), SRS dẫn nguồn từ docx cũ. Không phải bug của #125, nhưng cần BA sửa SRS |
 | S4     | [07-AD-S4-chen-cot-moi-o-giua.xlsx](files/07-AD-S4-chen-cot-moi-o-giua.xlsx)                    | CCCD dời từ `H2` sang **`I2`** · cột cuối đẩy sang **AF1**                    | ❌ Bị chặn — mọi cột phía sau lệch vị trí                                                                                                                    |
-| **S5** | [08-AD-S5-them-cot-o-cuoi.xlsx](files/08-AD-S5-them-cot-o-cuoi.xlsx)                            | CCCD vẫn `H2` · thêm **`AF2` = "Cột thêm ở cuối"**, mọi cột cũ giữ nguyên vị trí | ⚠️ SRS nói phải chặn, nhưng `validateImportFile` trên master **chỉ kiểm cột thiếu**, không kiểm cột thừa → nhiều khả năng **LỌT**. Nếu lọt → raise bug riêng |
+| **S5** | [08-AD-S5-them-cot-o-cuoi.xlsx](files/08-AD-S5-them-cot-o-cuoi.xlsx)                            | CCCD vẫn `H2` · thêm **`AF2` = "Cột thêm ở cuối"**, mọi cột cũ giữ nguyên vị trí | ⚠️ **Master hiện tại: dự kiến LỌT** — `validateImportFile` chỉ kiểm cột thiếu, không kiểm cột thừa. **KHÔNG raise bug riêng**: `origin/feature/import-invoice-total` đã siết thành `!missingHeaders.isEmpty() \|\| actualHeaders.size() != expectedHeaders.size()` → sau khi nhánh đó merge (đợt 2) thì phải **CHẶN**. Chạy lại case này sau rebase |
 
 > ⚠️ **S1 và S2 đang là 2 file giống hệt nhau** (đều là template hiện tại đã bỏ cột H). Muốn S1 đúng nghĩa "file mẫu cũ" thì phải lấy file `.xlsx` tải về từ **bản master trước khi merge #125** — nếu template cũ còn khác chỗ nào ngoài cột CCCD thì file mô phỏng này không phát hiện được.
 
@@ -166,11 +170,11 @@ CCCD là cột **cấp hóa đơn** → chỉ đọc ở **dòng mở đầu hó
 | 01  | [01-AD-nhom1-gia-tri-cccd.xlsx](files/01-AD-nhom1-gia-tri-cccd.xlsx)                             | AD · CCCD ở **H**                 | 4–22 (19 dòng = 19 HĐ)    | V1–V9, E1–E10       | 19/19 dòng `@Text` + chuỗi · giữ đúng số 0 đầu           | **9 hóa đơn nháp được tạo** (V1–V9) · **10 dòng lỗi** (E1–E10 = hàng 13–22), message `Căn cước công dân không đúng định dạng` |
 | 02  | [02-AD-nhom2-dinh-dang-o.xlsx](files/02-AD-nhom2-dinh-dang-o.xlsx)                               | AD · CCCD ở **H**                 | 4–7                       | F1–F4               | H4 Text · H5/H6/H7 **kiểu số** đúng như mô phỏng         | **1 HĐ được tạo** (F1) · **3 dòng lỗi** (F2, F3, F4)                                                                          |
 | 03  | [03-AD-nhom3-nhieu-dong-hang.xlsx](files/03-AD-nhom3-nhieu-dong-hang.xlsx)                       | AD · CCCD ở **H**                 | 4–18 (5 HĐ × 3 dòng hàng) | M1–M5               | CCCD ở `H2`, cột cuối `AE1` — đúng template AD           | M1 `001099001234` · M2 `001099001234` (lấy dòng đầu) · M3 `NULL` · M4 **lỗi hàng 14** · M5 ⚠️ verify Issue 6                  |
-| 04  | [04-AD-S1-file-mau-cu-khong-co-cot-cccd.xlsx](files/04-AD-S1-file-mau-cu-khong-co-cot-cccd.xlsx) | AD (bỏ cột H)                     | 4–5                       | S1                  | không có tiêu đề CCCD · cột cuối lùi về `AD1`            | ❌ _File nhập không đúng template_                                                                                            |
+| 04  | [04-AD-S1-file-mau-cu-khong-co-cot-cccd.xlsx](files/04-AD-S1-file-mau-cu-khong-co-cot-cccd.xlsx) | AD (bỏ cột H)                     | 4–5                       | S1                  | không có tiêu đề CCCD · cột cuối lùi về `AD1`            | ❌ _File nhập không đúng mẫu. Vui lòng kiểm tra lại lựa chọn tự động tính toán và thực hiện tải lại file mẫu._                                                                                            |
 | 05  | [05-AD-S2-xoa-cot-cccd.xlsx](files/05-AD-S2-xoa-cot-cccd.xlsx)                                   | AD (bỏ cột H)                     | 4–5                       | S2                  | giống hệt 04                                             | ❌ Như S1                                                                                                                     |
 | 06  | [06-AD-S3-doi-ten-tieu-de-cccd.xlsx](files/06-AD-S3-doi-ten-tieu-de-cccd.xlsx)                   | AD (`H2` = `CCCD`)                | 4–5                       | S3                  | không còn chuỗi "Căn cước công dân" · cột cuối vẫn `AE1` | ❌ Bị chặn                                                                                                                    |
 | 07  | [07-AD-S4-chen-cot-moi-o-giua.xlsx](files/07-AD-S4-chen-cot-moi-o-giua.xlsx)                     | AD (+1 cột, CCCD dời sang **I**)  | 4–5                       | S4                  | CCCD ở `I2` · cột cuối đẩy sang `AF1`                    | ❌ Bị chặn                                                                                                                    |
-| 08  | [08-AD-S5-them-cot-o-cuoi.xlsx](files/08-AD-S5-them-cot-o-cuoi.xlsx)                             | AD (+`AF2` = "Cột thêm ở cuối")   | 4–5                       | S5                  | CCCD vẫn `H2`, cột cũ **không lệch** · thừa `AF2`        | ⚠️ Dự kiến **LỌT** → nếu import thành công thì raise bug riêng                                                                |
+| 08  | [08-AD-S5-them-cot-o-cuoi.xlsx](files/08-AD-S5-them-cot-o-cuoi.xlsx)                             | AD (+`AF2` = "Cột thêm ở cuối")   | 4–5                       | S5                  | CCCD vẫn `H2`, cột cũ **không lệch** · thừa `AF2`        | ⚠️ Dự kiến **LỌT** trên master · sẽ **CHẶN** sau khi `feature/import-invoice-total` merge                                                                |
 | 09  | ⛔ _chưa có_                                                                                     | **AI** · CCCD ở **H**             | —                         | V2, V8, E1, E10     | —                                                        | **Thiếu.** Tải `mau_nhap_hoa_don_DEItyDnb.xlsx` từ popup (bỏ tích "Tự động tính toán…") rồi dựng bổ sung                      |
 | 10  | [10-AL-thay-the-nhom1-rut-gon-va-R9.xlsx](files/10-AL-thay-the-nhom1-rut-gon-va-R9.xlsx)         | AL · CCCD ở **K**                 | 4–8                       | V2, V8, E1, E10, R9 | CCCD ở `K2` · cột cuối `AM1` — đúng template AL          | 2 HĐ thay thế OK (V2, V8) · 2 dòng lỗi (E1, E10) · R9 → **404**                                                               |
 | 11  | [11-AR-dieu-chinh-giu-nguyen-R1.xlsx](files/11-AR-dieu-chinh-giu-nguyen-R1.xlsx)                 | AR **cũ** (không có cột CCCD)     | 4–7 (data mẫu gốc)        | R1                  | md5 **trùng** `mau_nhap_hoa_don_DEItyFnb.xlsx` đang ship  | ✅ Import bình thường — chứng minh đợt 1 không đụng nhánh điều chỉnh                                                          |
@@ -201,7 +205,7 @@ Tick khi chạy xong. Cột "Thực tế" chỉ điền khi **khác** kỳ vọn
 | [ ]  | 05 · S2                        | Chặn: sai template                          |                    |
 | [ ]  | 06 · S3                        | Chặn                                        |                    |
 | [ ]  | 07 · S4                        | Chặn                                        |                    |
-| [ ]  | 08 · **S5**                    | Dự kiến LỌT → nếu lọt, raise bug riêng      |                    |
+| [ ]  | 08 · **S5**                    | Master: LỌT · sau đợt 2: CHẶN               |                    |
 | [ ]  | 09 · AI *(chưa có file)*       | Giống 01 rút gọn                            |                    |
 | [ ]  | 10 · AL + R9                   | 2 OK, 2 lỗi, R9 → 404                       |                    |
 | [ ]  | 11 · R1 (AR cũ)                | Import bình thường                          |                    |

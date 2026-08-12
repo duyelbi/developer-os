@@ -63,7 +63,7 @@ Cách tách này chạy được vì `validateImportFile` so header **theo từn
 
 ```
 POST /api/invoices/import → RabbitMQ (ImportFileInvoiceConsumer) → InvoiceImportService
-  1. validateImportFile()            (dòng 3259) — so header thực tế vs enum theo cellRange → "File nhập không đúng template"
+  1. validateImportFile()            (dòng 3259) — so header thực tế vs enum theo cellRange → "File nhập không đúng mẫu. Vui lòng kiểm tra lại lựa chọn tự động tính toán và thực hiện tải lại file mẫu."
   2. readXxxExcelData()              (dòng 3025 / 3086 / 3147 / 3205) — switch theo CHỈ SỐ CỘT
   3. validateXxxExcelData()          (dòng 1434 / 1741 / 2044 / 2503) — validate từng dòng, gom vào listFailedInvoices
   4. generateRequest... → dựng InvoiceBuyerRequest (dòng ~582 / 768 / 1091 / 1335)
@@ -106,7 +106,7 @@ Branch đó cũng siết header check thành `actualHeaders.size() != expectedHe
 
 **Ba hệ quả:**
 
-1. Nếu làm CCCD cho `AR` trên master trước khi import-tổng-tiền merge → dùng file `AR_...xlsx` của BA sẽ **luôn báo "File nhập không đúng template"**.
+1. Nếu làm CCCD cho `AR` trên master trước khi import-tổng-tiền merge → dùng file `AR_...xlsx` của BA sẽ **luôn báo "File nhập không đúng mẫu. Vui lòng kiểm tra lại lựa chọn tự động tính toán và thực hiện tải lại file mẫu."**.
 2. Sau khi import-tổng-tiền lên, hệ thống có **5 template**, không phải 4: AD, AI, AL, **AR-tích** (không khối tổng), **AR-bỏ-tích** (có khối tổng).
 3. **BA mới giao 4 file — thiếu template "AR-tích tự động + CCCD".** Phải yêu cầu bổ sung ở đợt 2, nếu không nhánh tích tự động của HĐ điều chỉnh sẽ không import được sau khi đổi.
 
@@ -449,9 +449,9 @@ Bug **có sẵn**, không do task CCCD gây ra (email/SĐT/thuế suất sai ở
 | 1 | Cả 3 loại file mẫu mới (AD/AI/AL), CCCD hợp lệ 12 số bắt đầu bằng `0`, ô định dạng Text | Import OK; kiểm DB `invoice_buyers.id_number` **còn nguyên số 0 đầu** |
 | 2 | Cột CCCD **rỗng toàn bộ** | Import OK, `id_number = null`, không lỗi |
 | 3 | CCCD 11 / 13 số, có chữ, có dấu `-` | Lỗi dòng *"Căn cước công dân không đúng định dạng"*, dòng đó không tạo HĐ, email báo cáo có "Hàng {n}: …" |
-| 4 | **Dùng file mẫu CŨ** (thiếu cột CCCD) | Chặn ngay khi nhập: *"Nhập file thất bại — Không thể thực hiện hành động này: File nhập không đúng template"* |
+| 4 | **Dùng file mẫu CŨ** (thiếu cột CCCD) | Chặn ngay khi nhập: *"Nhập file thất bại — Không thể thực hiện hành động này: File nhập không đúng mẫu. Vui lòng kiểm tra lại lựa chọn tự động tính toán và thực hiện tải lại file mẫu."* |
 | 5 | Đổi tên cột "Căn cước công dân" thành tên lạ | Chặn theo cơ chế hiện có |
-| 6 | Xóa cột CCCD / thêm cột mới | *"File nhập không đúng template"* |
+| 6 | Xóa cột CCCD / thêm cột mới | *"File nhập không đúng mẫu. Vui lòng kiểm tra lại lựa chọn tự động tính toán và thực hiện tải lại file mẫu."* |
 | 7 | HĐ **nhiều dòng hàng**, CCCD khác nhau giữa các dòng, **tất cả đều hợp lệ** | Lấy **dòng đầu tiên** (kiểm DB + màn chi tiết HĐ, ô "Căn cước công dân") |
 | 8 | Ô CCCD **tự đổi sang định dạng Number**, gõ `001099001234` | Lỗi *"Căn cước công dân không đúng định dạng"* (Excel đã cắt số 0 → còn 10 chữ số) — xác nhận quyết định Q2 |
 | 8b | Dùng **đúng file mẫu BA giao** (cột Text), gõ `001099001234` | Import OK, DB lưu **đủ 12 chữ số kể cả 2 số 0 đầu** |
@@ -498,11 +498,13 @@ Bug **có sẵn**, không do task CCCD gây ra (email/SĐT/thuế suất sai ở
 - [ ] Sửa ngày ở `// TODO` trong `InvoiceImportModal.tsx` = **ngày merge master thật** (ngày fix cứng tạm trông hợp lệ nên sẽ không tự lộ ra nếu quên)
 - [ ] QA đối chiếu lại ngày hiển thị trên popup khớp ngày merge (test case #13)
 
-**Đợt 2 (AR) — mở lại khi:**
-- [ ] `feature/import-invoice-total` đã merge master và chốt số biến thể template HĐ điều chỉnh (1 hay 2)
-- [ ] BA đã giao file mẫu "AR-tích tự động + CCCD" và cập nhật SRS §6.2
+**Đợt 2 (AR) — mở lại khi:** *(số biến thể đã xác minh 07/08/2026: **2**, không phải 1)*
+- [ ] `feature/import-invoice-total` đã merge master
+- [ ] **BA giao file mẫu thứ 5** "AR-tích tự động + CCCD" và cập nhật SRS §6.2 từ 4 → 5 file ← **chặn cứng**
 - [ ] Rebase code đợt 1 lên master mới trước khi sửa nhánh điều chỉnh
-- [ ] FE: **bỏ điều kiện ẩn** `(cập nhật ngày: …)` khi chọn "Hóa đơn điều chỉnh" + cập nhật lại `SAMPLE_FILE_UPDATED_AT` theo ngày uplive đợt 2
+- [ ] Code cho **2** enum: `InvoiceHeaderAdjustmentImport` (AR tích) + `InvoiceHeaderAdjustmentProactivelyCalculateImport` (AR bỏ tích, có khối tổng tiền) — mỗi cái đủ 5 bước enum/model/read/validate/generateRequest
+- [ ] FE: đè file `mau_nhap_hoa_don_DEItyFnb.xlsx` + **bỏ điều kiện ẩn** `(cập nhật ngày: …)` khi chọn "Hóa đơn điều chỉnh"
+- [ ] **Chạy lại toàn bộ Nhóm 4 test** sau rebase — nhánh đó siết header check thành `actualHeaders.size() != expectedHeaders.size()`, thừa 1 ô tiêu đề cũng bị chặn
 
 ---
 
@@ -524,6 +526,85 @@ Cursor đã code xong đợt 1, đã review + verify. Nhánh: BE `feat/import-in
 **Hạn chế đã biết và chấp nhận:** CCCD của công dân VN đăng ký khai sinh ở nước ngoài (`840…` Hoa Kỳ, `392…` Nhật, `704…`) **vẫn bị chặn nhầm**. Trường hợp hiếm.
 
 **Còn nợ:** BA cập nhật SRS (UC-02 AC2/AC3, FR2) + mô tả issue [#125](https://git.dktsoft.com:2008/sapo-money/sapo-invoice/sapo-invoice-admin-service/-/work_items/125), nếu không QA đối chiếu SRS sẽ raise nhầm.
+
+### Message lỗi template đổi theo Figma (06/08/2026)
+
+SRS yêu cầu **3 message**. Kiểm tra thực tế:
+
+| | Message | Điều kiện | Trạng thái |
+|---|---|---|---|
+| M1 | `Căn cước công dân không đúng định dạng` | Ô có nhập, sau trim không khớp regex → **lỗi dòng**, ghi email `Hàng {n}: {lý do}` | ✅ Có · **giữ nguyên** |
+| M2 | `Nhập file thất bại` + `Không thể thực hiện hành động này: …` | Xóa cột / thêm cột / template cũ → **chặn ngay khi nhập**, không parse | ✅ Có · **đã đổi nội dung** |
+| M3 | `Tên cột {Tên cột} không hợp lệ` | Đổi tên một cột | ❌ **KHÔNG tồn tại** |
+
+**M2 — đã sửa theo Figma** [12881-93650](https://www.figma.com/design/7t7C9XzNP3nBJpBismG9zS/SAPO-E-INVOICE?node-id=12881-93650). Chuỗi do BE trả về, sửa 1 chỗ tại `InvoiceImportService` (~dòng 3342):
+
+```java
+// cũ:  "File nhập không đúng template"
+"File nhập không đúng mẫu. Vui lòng kiểm tra lại lựa chọn tự động tính toán và thực hiện tải lại file mẫu."
+```
+
+Hiển thị cuối cùng ghép từ 3 nơi: `<Banner title="Nhập file thất bại">` (FE:202) + `` `Không thể thực hiện hành động này: ${e.data.message}` `` (FE:94) + chuỗi BE ở trên.
+
+> ⚠️ **KHÔNG chép chữ "sản phẩm" từ Figma.** Bản thiết kế ghi *"Nhập file **sản phẩm** thất bại!"* nhưng đây là popup **hóa đơn** — frame Figma tên `Popup / Import prd` (prd = product), tức được nhân bản từ popup import sản phẩm và quên sửa text. Trong code cả 3 popup (sản phẩm, khách hàng, hóa đơn) đều dùng `title="Nhập file thất bại"`. Cần designer sửa lại Figma.
+
+**M3 — không implement.** Grep 0 hit ở `sapo-invoice-admin-service`, `sapo-invoice-admin-frontend`, `invoice-app` và jar `sapo-invoice-common-1.2.5`. SRS ghi *"theo cơ chế hiện có (docx mục 14 dòng 1934)"* → BA giả định message đã tồn tại, thực tế không. **Chốt: đổi tên cột dùng chung M2.**
+
+**Còn nợ BA:** cập nhật SRS §6.3, UC-03 AC2/AC3, FR3 theo 2 điểm trên.
+
+### File mẫu chỉ format Text vài dòng đầu — chốt KHÔNG sửa (07/08/2026)
+
+Phát hiện khi test: cột CCCD trong file mẫu chỉ có định dạng Text ở **AD dòng 4–7 · AI dòng 4–8 · AL dòng 4–8**, cột không có style mặc định → từ dòng kế tiếp là General → Excel cắt số 0 đầu ngay lúc gõ.
+
+**Quyết định: không sửa file mẫu ở đợt này, người dùng tự format cột thành Text.** Chấp nhận được vì hệ thống **báo lỗi rõ** khi số 0 bị cắt (`Căn cước công dân không đúng định dạng`) — dữ liệu sai không lọt xuống DB, chỉ là user phải nhập lại.
+
+Đã thử một vòng file mẫu mới (07/08): 3 file `AD_HD_moi_*`, `AI_HD_moi_*`, `AL_HD_thay_the_*` — header khớp enum 100% nhưng **chỉ AL** được format cả cột (tới dòng 998), AD/AI vẫn 4–7. Đã **xóa cả 3**, giữ nguyên bộ file cũ `mau_nhap_hoa_don_DEIty*`.
+
+> Nếu sau này muốn sửa: chọn **cả cột** (bấm chữ cái đầu cột) → Format Cells → Text → lưu. Bôi đen vùng có dữ liệu là **không đủ**, vì dòng trống chưa có ô nào để mang định dạng. Cũng **không** dùng Custom format `000000000000` — chỉ đệm khi hiển thị, giá trị thật vẫn là số.
+
+Cân nhắc rẻ tiền cho BA nếu muốn giảm va chạm mà không đụng code: thêm 1 dòng ghi chú ngay trong file mẫu (ô trống phía trên vùng tiêu đề, hoặc sheet "Hướng dẫn") nhắc format cột CCCD/SĐT/MST thành Text trước khi nhập.
+
+### Rà soát gap so với SRS (07/08/2026)
+
+Đối chiếu từng acceptance criteria với code. **9 mục đạt đủ**, 4 mục lệch có chủ đích, 4 gap còn lại.
+
+**✅ Đạt đủ:** UC-01 AC1–AC7 (cột đúng vị trí · map `id_number` · cột cấp hóa đơn lấy dòng đầu · áp cả 2 phân hệ · không tác động tiền/thuế · không đồng bộ ngược danh mục KH — `InvoiceImportService` grep `customer` = 0 hit) · UC-02 AC1 (trống → null) · UC-02 AC5 (không đối chiếu chéo MST) · UC-03 AC1/AC4 · out-of-scope sạch (`passport_id` 0 hit trong diff).
+
+**⚠️ Lệch SRS có chủ đích — BA phải cập nhật SRS, nếu không QA raise nhầm cả 4:**
+
+| SRS | SRS nói | Code làm |
+|---|---|---|
+| FR2 · UC-02 AC2/AC3 | `^\d{12}$` | `^0\d{11}$` |
+| §6.3 · UC-03 AC2 | *"File nhập không đúng template"* | *"…không đúng mẫu. Vui lòng kiểm tra lại lựa chọn tự động tính toán…"* |
+| FR3 · UC-03 AC3 | `Tên cột {Tên cột} không hợp lệ` | Dùng chung message trên |
+| §6.1 | *"không thay đổi bố cục popup"* | Thêm `(cập nhật ngày: …)` — mâu thuẫn nội bộ SRS vs work item + Figma |
+
+**❌ Gap còn lại:**
+
+**1. FR1 · UC-02 AC6 — thiếu template AR.** `validateIdNumber` gọi ở 3/4 hàm: `validateProactivelyCalculateExcelData` (1514) · `validateAutomaticallyCalculateExcelData` (1829) · `validateInvoiceReplacementExcelData` (2263). **Không có** ở `validateInvoiceAdjustmentExcelData` (2524). Xử lý ở đợt 2 — xem checklist cuối tài liệu, lưu ý **2 biến thể** và **file mẫu thứ 5 do BA giao**.
+
+**2. UC-02 AC4 — tách 3 vế, chỉ 1 vế thuộc về code và vế đó đã đạt:**
+
+| Vế | Thuộc về | Trạng thái |
+|---|---|---|
+| Cột CCCD định dạng Text `@` trên file mẫu | File mẫu | ⚠️ chỉ 4–8 dòng đầu — chốt không sửa |
+| Parse đọc ô CCCD **dạng chuỗi**, không scientific notation | **Code** | ✅ **Đạt** — `ExcelUtils.getCellStringValue` dùng `toPlainString()` |
+| Ô kiểu số → convert sang chuỗi **đủ chữ số, không mất số 0 đầu** | Code | ❌ **Bất khả thi** |
+
+Vế 3 không phải "chưa làm" mà là **SRS viết sai kỹ thuật**: Excel cắt số 0 lúc user gõ, file lưu xuống đã là `1099001234`, code không còn gì để khôi phục. BA cần sửa AC, dev không code thêm được.
+
+**3. UC-03 AC2 — thêm cột ở cuối không bị chặn. Gap này TỰ ĐÓNG ở đợt 2.** Logic có sẵn từ trước, task này không đụng (`git diff` trên khối so header = rỗng, chỉ đổi chuỗi message trong `if`). Và `origin/feature/import-invoice-total` **đã siết đúng chỗ đó**:
+
+```java
+// master hiện tại — chỉ kiểm cột thiếu
+if (!missingHeaders.isEmpty()) {
+// feature/import-invoice-total — kiểm thêm số lượng cột
+if (!missingHeaders.isEmpty() || actualHeaders.size() != expectedHeaders.size()) {
+```
+
+→ Không cần mở issue riêng. Chỉ ghi vào test case S5: *master hiện tại dự kiến **LỌT**, sau khi nhánh đó merge phải **CHẶN***.
+
+**4. File mẫu chỉ format Text 4–8 dòng đầu** — đã chốt không sửa, xem mục riêng phía trên.
 
 ### Kết quả verify
 
