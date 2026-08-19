@@ -635,3 +635,44 @@ if (!missingHeaders.isEmpty() || actualHeaders.size() != expectedHeaders.size())
 ### Bản vá chỉ dùng local
 
 `local-only-download-link-target.patch` — thêm `target="_blank"` vào `InvoiceImportModal.tsx` để tải được file mẫu khi test local (workaround cho bug #1). **Để unstaged, không commit.** Gỡ: `git checkout -- <file>` · dùng lại: `git apply <patch>`.
+
+---
+
+## Đã lên dev (07/08/2026) — trạng thái chốt phiên
+
+| Repo | Nhánh | dev | master |
+|---|---|---|---|
+| BE `sapo-invoice-admin-service` | `feat/import-invoice-buyer-id-number` | ✅ đã merge (qua nhánh tích hợp `-dev`, MR !567) | ⏳ [!566](https://git.dktsoft.com:2008/sapo-money/sapo-invoice/sapo-invoice-admin-service/-/merge_requests/566) draft, chờ QA |
+| FE `sapo-invoice-admin-frontend` | `feature/import-invoice-cccd-template` | ✅ đã merge (MR !352) | ⏳ [!353](https://git.dktsoft.com:2008/sapo-money/sapo-invoice/sapo-invoice-admin-frontend/-/merge_requests/353) draft, chờ QA |
+
+### Cách xử lý conflict với dev — làm lại y vậy nếu cần
+
+`dev` đã merge `feature/import-invoice-total`, nhánh đó sửa đúng 2 file của task nên MR đầu (!565) conflict. **Không resolve trên nhánh feature** — làm vậy nhánh đó dính lịch sử `dev` và kéo theo vào MR master.
+
+Cách đã dùng: dựng nhánh tích hợp riêng `feat/import-invoice-buyer-id-number-dev` tách từ `origin/dev`, merge nhánh feature vào đó, resolve, rồi mở MR mới (!567). Verify bằng `git merge-base --is-ancestor origin/dev <nhánh feature>` → phải trả về **false**.
+
+Cả 2 conflict đều thuần cộng thêm, giữ **cả hai phía**:
+- `ImportInvoiceValidator`: 6 method `validateAdjustment*` của dev + `validateIdNumber`
+- `validateImportFile`: điều kiện chặt của dev (`actualHeaders.size() != expectedHeaders.size()`) + message mới theo Figma
+
+### Hai điều phát hiện khi merge, ảnh hưởng kế hoạch
+
+**1. Gap UC-03 AC2 đã tự đóng trên dev.** Điều kiện chặt kiểm cả cột thừa. Test case **S5 chạy trên dev sẽ CHẶN**, không phải "lọt" — bảng test đang mô tả hành vi của master. Đã verify cả 4 file mẫu khớp chính xác số ô tiêu đề nên không bị chặn nhầm: AD 37/37 · AI 42/42 · AL 46/46 · AR-tích 45/45.
+
+**2. Điều kiện đợt 2 đã đạt một nửa.** `dev` có sẵn 2 enum HĐ điều chỉnh (`InvoiceHeaderAdjustmentImport` + `InvoiceHeaderAdjustmentProactivelyCalculateImport`). Còn thiếu: `feature/import-invoice-total` lên `master`, và **BA giao file mẫu thứ 5** "AR-tích + CCCD".
+
+### HĐ từ máy tính tiền — đã có sẵn, không cần code riêng
+
+Verify bằng code, không suy từ tài liệu: `routeCalculatorMachine` và `routes` cùng trỏ `InvoiceListPage`; toàn `src/` chỉ **1 nơi** render `InvoiceImportModal`; BE chỉ có `InvoiceController:306 @PostMapping("/import")`; `InvoiceImportService` grep `calculating|machine|mtt` = **0 hit**. Phân hệ suy ra từ ký hiệu hóa đơn trong file (ký tự thứ 5 = `M`), không phải từ request.
+
+→ Khi chạy test case R2 **phải đổi ký hiệu sang ký hiệu MTT**, dùng nguyên file trong `files/` là hóa đơn vẫn rơi vào phân hệ Hóa đơn.
+
+### Việc còn treo
+
+- [ ] QA chạy ma trận trên dev — xem [[epic-62-test-cases-cccd]]
+- [ ] BA cập nhật SRS theo 4 điểm lệch (xem mục "Rà soát gap so với SRS")
+- [ ] BA sửa Figma: bỏ chữ "sản phẩm" khỏi tiêu đề banner lỗi
+- [ ] Trước khi merge master: sửa ngày `06/08/2026` trong `InvoiceImportModal.tsx`
+- [ ] Raise issue riêng: `LinkComponent.tsx:27` làm prop `external` chết toàn app
+- [ ] Raise issue riêng: Issue 6 — dòng lỗi giữa HĐ làm HĐ tạo thiếu dòng hàng (verify bằng test case M5)
+- [ ] Đợt 2 (AR) — xem checklist phía trên
