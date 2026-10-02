@@ -1,0 +1,211 @@
+<title>Đường ống UI Spec cho SI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Be+Vietnam+Pro:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --paper:#F3F4F8; --surface:#FFFFFF; --surface-2:#EDEFF5;
+    --ink:#151A29; --ink-2:#4B5468; --ink-3:#78819A;
+    --rule:#DCE0EA; --rule-2:#BEC5D6;
+    --accent:#2B3F9E; --accent-2:#E6EAF8;
+    --shadow:0 1px 0 rgba(21,26,41,.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:#0F1220; --surface:#161A28; --surface-2:#1D2231;
+      --ink:#E8EBF3; --ink-2:#AEB6C8; --ink-3:#7F889D;
+      --rule:#272D3E; --rule-2:#3A4256;
+      --accent:#9AACFF; --accent-2:#1B2140; --shadow:none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:#0F1220; --surface:#161A28; --surface-2:#1D2231;
+    --ink:#E8EBF3; --ink-2:#AEB6C8; --ink-3:#7F889D;
+    --rule:#272D3E; --rule-2:#3A4256;
+    --accent:#9AACFF; --accent-2:#1B2140; --shadow:none;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink); margin: 0;
+    font-family: "Be Vietnam Pro", "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    display: grid;
+    grid-template-columns:
+      [full-start] minmax(20px,1fr)
+      [text-start] min(70ch, calc(100% - 40px))
+      [text-end] minmax(20px,1fr) [full-end];
+    padding: 0 0 96px;
+  }
+  .page > * { grid-column: text; }
+  .wide { grid-column: full; width: min(1080px, calc(100% - 40px)); margin-inline: auto; }
+  h1,h2,h3 { font-family: Newsreader, Georgia, "Times New Roman", serif; font-weight:500; text-wrap:balance; margin:0; }
+  h1 { font-size: clamp(2.1rem,5.2vw,3.05rem); line-height:1.1; letter-spacing:-.015em; }
+  h2 { font-size: clamp(1.5rem,3.2vw,1.95rem); line-height:1.2; letter-spacing:-.01em; }
+  h3 { font-size:1.16rem; line-height:1.35; font-weight:600; margin:34px 0 8px; }
+  p { margin: 0 0 1rem; }
+  a { color: var(--accent); text-underline-offset:.18em; text-decoration-thickness:.5px; }
+  a:focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
+  strong { font-weight:600; }
+  code { font-family:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; font-size:.855em; font-variant-ligatures:none; }
+  p code, li code, td code, th code {
+    background: var(--surface-2); border:1px solid var(--rule);
+    border-radius:3px; padding:.06em .34em; white-space:nowrap;
+  }
+  .masthead { padding: 72px 0 0; }
+  .eyebrow { font-size:.74rem; font-weight:600; letter-spacing:.13em; text-transform:uppercase; color:var(--accent); margin:0 0 18px; }
+  .dek { font-family: Newsreader, Georgia, serif; font-size:1.24rem; line-height:1.5; color:var(--ink-2); margin:20px 0 0; max-width:58ch; }
+  .intro { margin-top: 26px; padding-top:16px; border-top:1px solid var(--rule); color:var(--ink-2); font-size:.94rem; }
+  section { margin-top: 62px; }
+  .sec-head { display:flex; align-items:baseline; gap:14px; margin-bottom:10px; }
+  .sec-num { font-family:"IBM Plex Mono",monospace; font-size:.82rem; font-weight:500; color:var(--accent); padding-top:.35em; flex:none; }
+  .scroll { overflow-x:auto; margin:22px 0; border:1px solid var(--rule); background:var(--surface); box-shadow:var(--shadow); }
+  table { border-collapse:collapse; width:100%; font-size:.875rem; }
+  thead th {
+    text-align:left; vertical-align:bottom; font-size:.7rem; font-weight:600;
+    letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3);
+    background:var(--surface-2); padding:10px 14px; border-bottom:1px solid var(--rule-2); white-space:nowrap;
+  }
+  tbody td { padding:11px 14px; border-bottom:1px solid var(--rule); vertical-align:top; line-height:1.5; }
+  tbody tr:last-child td { border-bottom:0; }
+  tbody td:first-child { font-weight:500; }
+  td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+  pre {
+    margin:20px 0; padding:16px 18px; background:var(--surface); border:1px solid var(--rule);
+    overflow-x:auto; box-shadow:var(--shadow); font-size:.82rem; line-height:1.6;
+  }
+  pre code { background:none; border:0; padding:0; white-space:pre; }
+  .note { margin:24px 0; padding:16px 18px 6px; background:var(--surface); border:1px solid var(--rule-2); border-top:3px solid var(--ink-3); }
+  .note p:last-child { margin-bottom:1rem; }
+  ul, ol { margin:0 0 1rem; padding-left:1.25rem; }
+  li { margin-bottom:.4rem; }
+  li::marker { color:var(--ink-3); }
+  ol li::marker { color:var(--accent); font-variant-numeric:tabular-nums; }
+</style>
+<div class="page">
+<header class="masthead">
+<p class="eyebrow">Nghiên cứu khả thi · cập nhật 21-08-2026</p>
+<h1>Đường ống UI Spec cho SI</h1>
+<p class="dek">Chuyển thư viện UI cũ sang DS, thu hoạch spec trên đường đi</p>
+</header>
+<div class="intro"><p>Ghi nhớ bước điều tra + kế hoạch. <strong>Vault này là bộ nhớ cá nhân của giai đoạn nghiên cứu</strong>; khi làm task chính thức thì template/skill/rule/cổng CI đặt ở <code>invoice-docs</code>.</p><p>Mục tiêu công việc: dựng MCP + skill phục vụ chuyển <code>@sapo/ui-components</code> → <code>@sapo-finance/components</code>, nhằm đồng nhất <strong>UI và spec</strong> giữa các repo, SI trước. DS hiện xây chủ yếu cho SA (<code>sapo-accounting</code>) ⇒ phải đo SI tái dùng được gì, bổ sung gì.</p><p>Liên quan: design-system/README · design-system/audit-coverage-invoice · sapo-invoice/migrate-ui-components-sang-design-system · ai/rules-frontend</p></div>
+<section><div class="sec-head">
+<span class="sec-num">01</span>
+<h2>Kết luận ngắn</h2></div>
+<ol><li><strong>Độ phủ đổi hẳn so với audit 31-07.</strong> Đo lại trên manifest 17-08 (DS 55 → 67 component): <strong>81% bề mặt import của SI đã có chỗ trong DS</strong>. Khoảng trống 681 → <strong>375</strong> điểm trọng số, giảm 45%.</li><li><strong>78% chỗ trống còn lại nằm ở 4 symbol khung trang — và 3/4 không phải component.</strong> <code>Page</code>(75), <code>FormLayout</code>(50), <code>Layout</code>(45) là <em>công thức</em> DS đã có dưới dạng pattern, chỉ đang khai <code>apps: [sapo-accounting]</code>. <strong>Đã kiểm 21-08: <code>Loading</code>(124) cũng không phải việc của DS</strong> — nó render <code>null</code>, và SI đã tự viết lại toàn bộ cơ chế (xem §5). Component DS thật sự còn thiếu chỉ còn 56 điểm, toàn thứ nhỏ.</li><li><strong>Khung trang chặn tất cả:</strong> 21/24 module SI chạm <code>Page</code>, 13/24 chạm <code>Loading</code>. Chưa chốt cách dựng khung trang thì không trang nào migrate trọn vẹn được.</li><li><strong>Vốn từ spec tái dùng nhiều hơn tưởng:</strong> 18/19 ngữ nghĩa trung lập dùng ngay; ~15 pattern của SA là generic, chỉ cần thêm bằng chứng SI. Phải xây mới chủ yếu là <strong>flow riêng hóa đơn</strong> (hiện SI có <strong>0 flow riêng</strong>).</li><li><strong>Đề xuất mới duy nhất:</strong> bảng ánh xạ thư viện cũ → DS (<code>legacy-map.yaml</code>) đặt ở repo DS, phục vụ qua tool MCP <code>get_legacy_map</code>. SA cũng đang migrate — để bảng ở từng app là nhân đôi công và nhân đôi sai.</li></ol>
+</section>
+<section><div class="sec-head">
+<span class="sec-num">02</span>
+<h2>Đo lại độ phủ (20-08-2026)</h2></div>
+<p>Quét <code>sapo-invoice-admin-frontend/src</code> nhánh <code>master</code>, đối chiếu <code>manifest.json</code> sinh 17-08.</p>
+<div class="scroll"><table><thead><tr><th>Chỉ số</th><th class="num">Giá trị</th></tr></thead><tbody><tr><td>File <code>.ts/.tsx</code> trong <code>src/</code></td><td class="num">951</td></tr><tr><td>File chạm <code>@sapo/ui-components</code></td><td class="num">471</td></tr><tr><td>Symbol khác nhau</td><td class="num">124</td></tr><tr><td>Tổng trọng số (symbol × file)</td><td class="num">2.607</td></tr></tbody></table></div>
+<div class="scroll wide"><table><thead><tr><th>Nhóm</th><th class="num">Symbol</th><th class="num">Trọng số</th><th class="num">Tỉ lệ</th></tr></thead><tbody><tr><td>DIRECT — đổi import, prop lệch nhẹ</td><td class="num">44</td><td class="num">1.529</td><td class="num">58%</td></tr><tr><td>RESHAPE — DS có nhưng khác chất</td><td class="num">21</td><td class="num">606</td><td class="num">23%</td></tr><tr><td>GAP — chưa có đường đi</td><td class="num">23</td><td class="num">375</td><td class="num">14%</td></tr><tr><td>TYPE/UTIL</td><td class="num">35</td><td class="num">97</td><td class="num">3%</td></tr></tbody></table></div>
+<h3>Ba tuần qua DS đóng được gì</h3>
+<div class="scroll wide"><table><thead><tr><th>Symbol cũ</th><th class="num">Trọng số</th><th>31-07</th><th>Hôm nay</th></tr></thead><tbody><tr><td><code>IndexTable</code>/<code>DataTable</code>/<code>useIndexResourceState</code>/<code>SelectionType</code>…</td><td class="num">168</td><td>GAP Tier 2</td><td><code>DataGrid</code> — RESHAPE</td></tr><tr><td><code>AlphaFilters</code> + 3 interface</td><td class="num">100</td><td>GAP Tier 2</td><td><code>Filters</code>/<code>FilterPanel</code> — RESHAPE</td></tr><tr><td><code>DropZone</code></td><td class="num">15</td><td>GAP Tier 3</td><td><code>Dropzone</code> — DIRECT</td></tr><tr><td><code>ContextualSaveBar</code></td><td class="num">16</td><td>GAP Tier 3</td><td>Có — DIRECT</td></tr><tr><td><code>ButtonGroup</code>/<code>ActionList</code>/<code>OptionList</code></td><td class="num">21</td><td>GAP Tier 3/4</td><td>Có — DIRECT</td></tr><tr><td><code>SettingColumn</code> (component nội bộ SI)</td><td class="num">—</td><td>đề xuất promote</td><td>Đã có trong DS</td></tr></tbody></table></div>
+<p>⇒ <strong>Bảng dữ liệu không còn là đường găng. Đường găng là khung trang.</strong></p>
+</section>
+<section><div class="sec-head">
+<span class="sec-num">03</span>
+<h2>Tái sử dụng được gì từ DS xây cho SA</h2></div>
+<h3>Component — 81% dùng lại được</h3>
+<p>Không component nào của DS bị khoá theo nghiệp vụ kế toán. Phần RESHAPE tốn công vì DS chọn ngữ nghĩa khác thư viện cũ:</p>
+<div class="scroll"><table><thead><tr><th>Symbol</th><th class="num">Trọng số</th><th>Lệch ở đâu</th></tr></thead><tbody><tr><td><code>Stack</code></td><td class="num">134</td><td>Thư viện cũ mặc định <em>ngang</em> + prop <code>vertical</code>; DS tách <code>Stack</code> (dọc) / <code>Inline</code> (ngang). Không codemod mù được — <strong>tốn công nhất toàn bộ migrate</strong></td></tr><tr><td><code>Modal</code></td><td class="num">100</td><td><code>active</code> → <code>open</code>, kiểm compound <code>Modal.Section</code></td></tr><tr><td>bộ bảng → <code>DataGrid</code></td><td class="num">168</td><td>Chọn dòng + phân trang gộp vào lưới; bỏ <code>useIndexResourceState</code></td></tr><tr><td>bộ lọc → <code>Filters</code></td><td class="num">100</td><td>Applied-filter chips đổi hình dạng interface</td></tr><tr><td><code>EmptyState</code> họ</td><td class="num">10</td><td>DS dùng union quy định sẵn (<code>SystemState</code>)</td></tr><tr><td><code>Skeleton*</code> họ</td><td class="num">94</td><td>DS có base; công thức cấp trang nằm ở pattern <code>page-skeleton</code></td></tr></tbody></table></div>
+<h3>Pattern — phân loại theo việc phải làm</h3>
+<div class="scroll"><table><thead><tr><th>Nhóm</th><th>Gồm</th><th>Việc</th></tr></thead><tbody><tr><td><strong>Dùng ngay</strong></td><td>18 ngữ nghĩa trung lập · <code>list-page</code> · <code>filter-bar</code> · <code>overlay-form</code> · <code>settings-page</code> · <code>dashboard-page</code> · <code>confirm-modal</code> · <code>bulk-action-bar</code> · <code>column-setting</code> · <code>footer-help</code> · 6 flow chung</td><td>Không có</td></tr><tr><td><strong>Nhận bằng chứng SI</strong></td><td><code>detail-page</code> · <code>form-page</code> · <code>report-page</code> · <code>wizard-page</code> · <code>page-skeleton</code> · <code>form-section</code> · <code>line-items</code> · <code>summary-strip</code> · <code>detail-summary</code> · <code>related-list</code> · <code>drill-down</code> · <code>import-modal</code> · <code>export-modal</code> · <code>async-job-toast</code> · <code>period-filter</code> · flow <code>import</code>/<code>export</code>/<code>duplicate</code></td><td>Thêm <code>sapo-invoice</code> vào <code>apps</code> + dòng <code>seenIn</code> thật. Đã kiểm <code>form-page</code>: PageHeader + thanh lưu + nhóm trường, không dính kế toán</td></tr><tr><td><strong>Xây mới cho SI</strong></td><td>flow: phát hành · cấp mã CQT · thay thế · điều chỉnh · hủy · gửi người mua · xử lý thông điệp CQT. semantic: <code>taxCode</code> · <code>invoiceSeries</code> · <code>invoiceNo</code> · <code>vatRate</code> · <code>taxAuthorityCode</code></td><td><code>pattern-mine</code> trên <code>src/pages</code> rồi MR sang DS</td></tr><tr><td><strong>Không áp dụng</strong></td><td><code>post-voucher</code> · <code>unpost-voucher</code> · <code>closing-date-guard</code> · <code>auto-post</code> · <code>derive-voucher</code> · <code>settlement</code> · <code>sequence-duplicate</code> · semantic <code>refNo</code></td><td>Bỏ qua</td></tr></tbody></table></div>
+<p><code>vatRate</code> đáng nói riêng: <code>vat_name</code> nhận cả <code>10%</code> lẫn <code>KCT</code>/<code>KKKNT</code> ⇒ không phải <code>percent</code>, cũng không phải <code>enum</code> thuần.</p>
+</section>
+<section><div class="sec-head">
+<span class="sec-num">04</span>
+<h2>Cần bổ sung gì vào DS</h2></div>
+<div class="scroll wide"><table><thead><tr><th>Symbol</th><th class="num">Trọng số</th><th>Bản chất</th><th>Đề xuất</th></tr></thead><tbody><tr><td><code>Loading</code></td><td class="num">124</td><td><strong>SI tự lo</strong> — đã kiểm 21-08</td><td>Component này <strong>render <code>null</code></strong>: nó chỉ gọi <code>useFrame().startLoading()</code> khi mount. Thanh tiến trình do <code>Frame</code> vẽ. SI đã tự viết lại đủ bộ ở <code>pages/setting/components/SettingLayout/</code> (xem §5)</td></tr><tr><td><code>Page</code></td><td class="num">75</td><td>Đã có công thức</td><td><code>PageHeader</code> cover title · backAction · actions · collapsedActions · info · pagination; phần bọc ngoài do <code>Container</code> + skeleton của screen pattern lo</td></tr><tr><td><code>FormLayout</code></td><td class="num">50</td><td>Đã có công thức</td><td><code>form-section</code> (PAT-BLK-010) + <code>Stack</code>/<code>InlineGrid</code></td></tr><tr><td><code>Layout</code> + <code>Layout.Section</code></td><td class="num">45</td><td>Đã có công thức</td><td><code>Container</code> · <code>GridResponsive</code> · <code>InlineGrid</code>; cần một recipe hai cột được viết ra</td></tr><tr><td><code>List</code> · <code>ChoiceList</code> · <code>Labelled</code> · <code>TextContainer</code></td><td class="num">49</td><td>Thiếu thật</td><td>Nhỏ, làm sau</td></tr><tr><td><code>ColorPicker</code> + 5 util màu</td><td class="num">8</td><td>Thiếu thật</td><td>SI có sẵn 376 LOC — promote lên DS thay vì build lại</td></tr><tr><td><code>Frame</code>/<code>Navigation</code>/<code>TopBar</code>/<code>AppProvider</code>/<code>createTheme</code>/<code>useTheme</code></td><td class="num">21</td><td><strong>Quyết định, không phải code</strong></td><td><code>packages/components/AGENTS.md</code> đang <strong>loại trừ</strong> app shell khỏi export — mâu thuẫn với mục tiêu "DS phủ hết nhu cầu SI"</td></tr></tbody></table></div>
+<h3>Khung trang chặn 21/24 module (đo được)</h3>
+<p>Chỉ <code>auth</code>, <code>oauth</code>, <code>dashboard</code> là sạch hoặc gần sạch. Ứng viên trang mẫu, bề mặt nhỏ nhất:</p>
+<div class="scroll wide"><table><thead><tr><th>Trang</th><th class="num">File chạm</th><th class="num">Symbol</th><th>Còn vướng</th></tr></thead><tbody><tr><td><code>setting/pages/email-invoice</code></td><td class="num">1</td><td class="num">6</td><td><code>FormLayout</code>, <code>Page</code></td></tr><tr><td><code>setting/pages/decimal-configuration</code></td><td class="num">1</td><td class="num">10</td><td><code>FormLayout</code>, <code>Page</code></td></tr><tr><td><code>setting/pages/import-export-history</code></td><td class="num">5</td><td class="num">18</td><td><code>Loading</code>, <code>Page</code></td></tr><tr><td><code>setting/pages/tax-category</code></td><td class="num">12</td><td class="num">15</td><td><code>Loading</code>, <code>Page</code></td></tr></tbody></table></div>
+<p>Cả bốn chỉ vướng đúng họ khung trang ⇒ chốt xong mục 4 là có ngay trang làm mẫu.</p>
+<div class="note"><p><strong>"Màn mới hoặc viết lại trọn vẹn" nghĩa là gì:</strong> một trang phải chuyển <strong>hết trong một lần</strong>, không đổi lẻ vài component rồi để đó. Trộn hai thư viện trong cùng một trang = trộn hai hệ token, hai runtime CSS-in-JS (emotion + styled-components) và hai ngữ nghĩa <code>Stack</code>.</p></div>
+</section>
+<section><div class="sec-head">
+<span class="sec-num">05</span>
+<h2>Kiểm chứng <code>Loading</code> (21-08-2026) — không phải khoảng trống của DS</h2></div>
+<p>Giả thuyết ban đầu: <code>Loading</code>(124) là component duy nhất DS phải build gấp. <strong>Sai.</strong> Bốn bằng chứng:</p>
+<p><strong>(1) <code>Loading</code> của thư viện cũ render <code>null</code>.</strong> Nguyên văn <code>node_modules/@sapo/ui-components/dist/esm/components/Loading/Loading.js</code>:</p>
+<pre><code>const Loading = memo(function Loading() {
+  const { startLoading, stopLoading } = useFrame();
+  useEffect(() =&gt; { startLoading(); return () =&gt; { stopLoading(); }; }, [startLoading, stopLoading]);
+  return null;
+});</code></pre>
+<p>Nó là <strong>tín hiệu</strong>, không phải giao diện. Thanh tiến trình do <code>Frame</code> vẽ. Vì vậy 124 file kia không dùng 124 chỗ giao diện — chúng chỉ báo "đang bận" cho shell.</p>
+<p><strong>(2) SI đã tự viết lại đủ bộ, đang chạy thật.</strong> <code>pages/setting/components/SettingLayout/</code>:</p>
+<div class="scroll"><table><thead><tr><th>File</th><th>Vai trò</th></tr></thead><tbody><tr><td><code>SettingFrame.tsx</code></td><td>Context riêng: <code>loadingStack</code>, <code>startLoading</code>, <code>stopLoading</code>, <code>setContextualSaveBar</code>; render <code>&lt;StyledLoadingBar&gt;&lt;SettingLoading/&gt;&lt;/StyledLoadingBar&gt;</code> khi <code>loadingStack &gt; 0</code></td></tr><tr><td><code>SettingLoading.tsx</code></td><td>Thanh tiến trình ~40 dòng, <code>role="progressbar"</code>, tự animate qua <code>requestAnimationFrame</code></td></tr><tr><td><code>components/SettingLoading.tsx</code></td><td>Bản tín hiệu y hệt <code>Loading</code> của lib: <code>startLoading()</code>/<code>stopLoading()</code> rồi <code>return null</code></td></tr></tbody></table></div>
+<p>14 file đang dùng bản tự viết này. Tức SI đã copy đúng kiến trúc của lib — 1 tín hiệu + 1 frame giữ stack + 1 thanh — và nó hoạt động.</p>
+<p><strong>(3) <code>&lt;Frame&gt;</code> chỉ render ở 5 chỗ:</strong> <code>App.tsx:319</code> (gốc, chỉ bọc providers), <code>AdminFrame.tsx:55</code>, <code>LookupPage.tsx:85</code>, <code>AuthorizationTenantPage.tsx:38</code>, <code>PackagePriceListPage.tsx:28</code>. Thay không phải rewrite.</p>
+<p><strong>(4) Chỗ duy nhất còn vướng DS là token:</strong> <code>StyledLoading</code> dùng <code>p.theme.colors.actionPrimary</code>, <code>p.theme.spacing(1)</code>, <code>p.theme.motion.duration500</code> — theme runtime của lib cũ. Đổi sang CSS vars của <code>@sapo-finance/tokens</code> là 3 token.</p>
+<h3>Việc thật phải làm</h3>
+<div class="scroll"><table><thead><tr><th>Việc</th><th>Quy mô</th></tr></thead><tbody><tr><td>Nâng cơ chế <code>SettingFrame</code> lên cấp app (<code>AppFrame</code> + <code>AppLoading</code>)</td><td>~60 LOC đã tồn tại, chỉ move + generalize</td></tr><tr><td>Thay 5 chỗ <code>&lt;Frame&gt;</code> của lib</td><td>5 file</td></tr><tr><td>Đổi 124 import <code>Loading</code> → <code>app/components/AppLoading</code></td><td>Codemod thuần, không đọc từng call site</td></tr><tr><td>Đổi 3 token trong <code>StyledLoading</code> sang CSS vars</td><td>1 file</td></tr></tbody></table></div>
+<h3>Hệ quả dây chuyền</h3>
+<ul><li>GAP "DS phải build" tụt từ <strong>180 → 56</strong> điểm: chỉ còn <code>List</code>(22) · <code>ChoiceList</code>(14) · <code>Labelled</code>(12) · <code>ColorPicker</code>+util(8). Toàn thứ nhỏ, làm sau được.</li><li><strong>Câu hỏi app shell biến mất.</strong> <code>Frame</code>+<code>Navigation</code>+<code>TopBar</code> = 10 điểm, và SI đã tự dựng frame 2 lần. SI <strong>nên</strong> giữ shell — đúng thứ <code>packages/components/AGENTS.md:55</code> của DS muốn. Chuyển từ "câu hỏi cho DS" thành "ADR của SI".</li><li><strong>Câu hỏi theming cũng tự trả lời được</strong> (xem §9).</li><li>Còn phải làm việc với DS thật sự chỉ hai thứ, cả hai đều nhẹ: nhận MR mở <code>apps</code> cho 4 pattern, và trả lời <code>draft</code> nghĩa gì với consumer.</li></ul>
+<p><strong>Kết luận: SI không bị chặn. Bắt đầu được ngay.</strong></p>
+</section>
+<section><div class="sec-head">
+<span class="sec-num">06</span>
+<h2>MCP + skill phục vụ chuyển đổi</h2></div>
+<p>Nguyên tắc: <strong>mỗi lần migrate một trang là một lần sinh ra bằng chứng và spec.</strong> Không thu hoạch thì chỉ đổi được import và mất cơ hội đồng nhất spec.</p>
+<h3>6.1 Thêm vào MCP: <code>legacy-map</code></h3>
+<p>Bảng "symbol cũ → component DS + prop đổi tên + bẫy" là <strong>dữ liệu</strong>, không phải văn xuôi trong skill. Đặt ở <code>design-system/packages/patterns/src/foundation/legacy-map.yaml</code>, phục vụ qua tool mới <code>get_legacy_map</code> của <code>sapo-ds</code>.</p>
+<pre><code>- from: Stack
+  to: { component: Stack, alt: Inline }
+  kind: reshape
+  rule: "có prop `vertical` → Stack; không có → Inline"
+  danger: "prop truyền động thì KHÔNG tự đổi — đánh dấu TODO-DS-REVIEW"
+  weight: { sapo-invoice: 134 }
+
+- from: Banner
+  to: { component: AlertBanner }
+  kind: direct
+  props: { status: tone }
+
+- from: IndexTable
+  to: { component: DataGrid }
+  kind: reshape
+  note: "chọn dòng + phân trang gộp vào lưới; bỏ useIndexResourceState"
+  seeAlso: [PAT-SCR-001]</code></pre>
+<p>Lý do đặt ở DS: SA cũng đang migrate — đo được ở <code>line-items</code>, enterprise còn 69 file thư viện cũ, individual đã sang <code>DataGrid</code> 75 file.</p>
+<h3>6.2 Skill <code>ds-migrate-screen</code> (repo SI)</h3>
+<p>Đầu vào là <strong>một trang</strong>, không phải một component.</p>
+<div class="scroll"><table><thead><tr><th class="num">Bước</th><th>Làm gì</th><th>Dừng khi</th></tr></thead><tbody><tr><td class="num">1</td><td>Liệt kê symbol cũ của trang; tra <code>get_legacy_map</code> từng cái</td><td>—</td></tr><tr><td class="num">2</td><td>Còn symbol <code>kind: gap</code> → <strong>dừng</strong>, ghi <code>foundation/ds-debt.yaml</code>, báo cần DS bổ sung gì</td><td>Luôn dừng. Migrate nửa trang là nợ, không phải tiến độ</td></tr><tr><td class="num">3</td><td><code>get_usage</code> từng component đích — import, prop <strong>có thật</strong>, mục <code>dont</code></td><td>Prop không có trong kết quả là prop không tồn tại. Không grep source DS</td></tr><tr><td class="num">4</td><td><code>get_pattern</code> khung màn; dựng lại trang theo <code>skeleton</code> thay vì bê nguyên bố cục cũ</td><td>Đây là chỗ biến "đổi import" thành "đồng nhất UI"</td></tr><tr><td class="num">5</td><td>Viết khối <code>yaml uispec</code> cho trang <strong>từ code vừa dựng</strong>; <code>validate_spec</code> tới khi sạch</td><td>Spec sinh ra như sản phẩm phụ của migrate</td></tr><tr><td class="num">6</td><td>Thu hoạch <code>seenIn</code> cho pattern đã dùng → MR sang DS</td><td>Đủ 3 dòng ⇒ pattern lên <code>stable</code> ⇒ <code>validate_spec</code> bắt đầu <strong>chặn</strong></td></tr><tr><td class="num">7</td><td>Cổng: <code>pnpm lint:fix &amp;&amp; pnpm format</code> · đủ 5 state · đối chiếu <code>checklist</code></td><td>Không thỏa thì nói thẳng</td></tr></tbody></table></div>
+<p><strong>Vòng lặp tự siết:</strong> migrate → <code>seenIn</code> → <code>stable</code> → validator chặn → trang sau bị ép đi đúng khung. Hôm nay toàn bộ 59 pattern + 67 component đều <code>draft</code> nên chưa chặn được ai; chính việc migrate là nguồn bằng chứng duy nhất để thoát trạng thái đó.</p>
+<h3>6.3 Nối dây</h3>
+<pre><code>{
+  "mcpServers": {
+    "sapo-ds": { "type": "stdio", "command": "npx", "args": ["-y", "@sapo-finance/mcp"] }
+  }
+}</code></pre>
+<p>Đặt ở <code>sapo-invoice-admin-frontend/.mcp.json</code> và <code>invoice-docs/.mcp.json</code>. Ở repo frontend <code>cwd</code> có ý nghĩa: MCP resolve <code>@sapo-finance/components</code> theo cwd trước khi rơi xuống snapshot ⇒ manifest khớp version app đang code. Cần <code>.npmrc</code> trỏ scope <code>@sapo-finance</code> sang GitLab registry (<code>git.dktsoft.com:2008/api/v4/projects/3656/packages/npm/</code>). <strong>Đừng</strong> khai <code>SAPO_DS_MANIFEST</code>/<code>SAPO_DS_PATTERNS</code>.</p>
+<div class="note"><p>Bẫy: server đọc manifest/patterns <strong>một lần mỗi process</strong>. Regen xong phải restart <code>sapo-ds</code>, không thì agent kiểm bằng vốn từ cũ mà không báo lỗi.</p></div>
+</section>
+<section><div class="sec-head">
+<span class="sec-num">07</span>
+<h2>Spec: UI Spec và template SRS</h2></div>
+<p><code>sapo-ds</code> đã phục vụ sẵn hợp đồng UI Spec: một schema zod dùng chung cho <code>validate_spec</code>, resource <code>ds://spec-schema</code> và khối YAML mẫu ⇒ không lệch nhau được. Kèm hai prompt <code>author_uispec</code> (BA) và <code>implement_uispec</code> (dev) — đặt ở MCP vì BA làm ở repo docs, dev ở repo frontend, không repo nào đọc được skill của repo kia.</p>
+<p>Ba chỗ template <code>invoice-docs/_template/srs-uc.md</code> chưa đỡ được khối máy đọc:</p>
+<div class="scroll"><table><thead><tr><th>Cần thêm</th><th>Vì sao</th></tr></thead><tbody><tr><td><strong>Mục Domain Model</strong> — bảng thực thể có cột <em>ngữ nghĩa · bắt buộc · tập giá trị · công thức · trỏ tới</em></td><td>Nguồn của <code>fields[]</code>. Không có bảng thì khối YAML bị bịa từ văn xuôi. <code>srs-domain.md</code> đã có sẵn mục này</td></tr><tr><td><strong>Mục UI Spec</strong> — bảng đăng ký màn + mỗi màn một khối <code> </code>`<code>yaml uispec </code></td><td>§6 hiện là bảng văn xuôi. Có khối máy đọc thì validate = đọc file → parse → gọi tool; không có thì phải nhờ LLM trích, và bước trích đó là chỗ sai lệch âm thầm</td></tr><tr><td><strong>Bảng mã lỗi</strong> + <strong>bảng API</strong></td><td><code>guards[].error</code> trỏ mã, <code>params.api</code> trỏ mã API</td></tr></tbody></table></div>
+<p>Va chạm số mục: hợp đồng DS ghi "§7"/"§5" theo template của SA; <code>srs-uc.md</code> của SI có §5 = User Stories, §7 = Tuân thủ. <strong>Neo vào thẻ khối <code>yaml uispec</code> + tên mục</strong>, rồi MR nhỏ sang DS sửa cách gọi tên.</p>
+</section>
+<section><div class="sec-head">
+<span class="sec-num">08</span>
+<h2>Lộ trình</h2></div>
+<div class="scroll"><table><thead><tr><th>GĐ</th><th>Làm gì</th><th>Xong khi</th></tr></thead><tbody><tr><td>0 · Nối dây</td><td>Hai <code>.mcp.json</code> + <code>.npmrc</code>; cài <code>@sapo-finance/components</code> vào SI</td><td>Gọi được <code>get_pattern</code>/<code>get_usage</code> từ cả hai repo</td></tr><tr><td>1 · <strong>Nâng shell của SI lên cấp app</strong></td><td>Không còn chờ DS. Đưa cơ chế <code>SettingFrame</code> (loadingStack + thanh tiến trình) lên app; thay 5 chỗ <code>&lt;Frame&gt;</code>; đổi 124 import <code>Loading</code> sang bản của app; ghi ADR "shell thuộc SI"</td><td>Một trang <code>setting/pages/*</code> dựng lại hoàn toàn bằng DS, không còn import thư viện cũ</td></tr><tr><td>2 · Bảng ánh xạ + skill</td><td><code>legacy-map.yaml</code> + <code>get_legacy_map</code>; skill <code>ds-migrate-screen</code>; migrate <code>email-invoice</code> hoặc <code>decimal-configuration</code></td><td>Trang mẫu qua đủ 7 bước, có khối <code>uispec</code> validate sạch</td></tr><tr><td>3 · Thu hoạch vốn từ</td><td>Mỗi trang cấp <code>seenIn</code>; <code>pattern-mine</code> đãi flow riêng SI + 5 ngữ nghĩa</td><td>Pattern đủ 3 bằng chứng lên <code>stable</code></td></tr><tr><td>4 · Template SRS</td><td>Sửa template ở <code>invoice-docs</code>; skill viết UI Spec; rule nạp theo path</td><td>Một SRS thật có khối <code>uispec</code> validate 0 error</td></tr><tr><td>5 · Nhân rộng</td><td>Cuốn chiếu <code>setting</code> → <code>report</code> → danh sách hóa đơn; CLI <code>sapo-mcp validate</code> cho cổng CI</td><td><code>@sapo/ui-components</code> rời <code>package.json</code></td></tr></tbody></table></div>
+<p>Chạy song song, không chặn ai: <strong>dọn component nội bộ SI</strong> — audit 31-07 đo 9.019 LOC trong <code>src/components/</code> là thứ DS đã có (riêng cụm select/autocomplete có 5 biến thể song song).</p>
+</section>
+<section><div class="sec-head">
+<span class="sec-num">09</span>
+<h2>Quyết định cần chốt</h2></div>
+<div class="scroll"><table><thead><tr><th>Câu hỏi</th><th>Khuyến nghị</th><th>Nếu chọn khác</th></tr></thead><tbody><tr><td>DS có nhận app shell?</td><td><strong>Không cần hỏi nữa.</strong> SI tự giữ shell — đã dựng frame riêng 2 lần (<code>SettingFrame</code>, <code>AdminFrame</code>), đúng thứ <code>AGENTS.md</code> của DS muốn. Chỉ cần ghi thành ADR</td><td>Đi hỏi rồi chờ ⇒ mất vài sprint cho thứ SI đã có</td></tr><tr><td>Khung trang: DS build <code>Page</code>/<code>FormLayout</code>/<code>Layout</code> hay SI đổi sang <code>PageHeader</code> + pattern?</td><td>Đi theo pattern — DS đã cố ý phân rã như vậy</td><td>Xin DS build ⇒ chậm hơn và SA sẽ không dùng</td></tr><tr><td>Theming runtime hay CSS vars?</td><td><strong>Tự trả lời được.</strong> <code>createTheme</code> chỉ cấu hình cho component của lib cũ (<code>layout.widthPrimary</code> → <code>Layout</code>, <code>navigation.baseWidth</code> → <code>Navigation</code>, <code>popover.maxHeight</code> → <code>Popover</code>) — bỏ lib là bỏ luôn. Phần theme SI thật sự cần cho code của mình (vd <code>StyledLoading</code> dùng 3 token) chuyển sang CSS vars của <code>@sapo-finance/tokens</code></td><td>Hai hệ token cùng chạy suốt giai đoạn chuyển tiếp</td></tr><tr><td>Ai làm chủ <code>legacy-map</code>?</td><td>Repo DS</td><td>Mỗi app một bảng ⇒ hai cách đổi <code>Stack</code></td></tr><tr><td><code>draft</code> nghĩa gì với consumer?</td><td>Trả lời trước khi SI cam kết 471 file: API còn đổi không, đổi thì báo qua đâu</td><td>Migrate xong một đợt rồi DS đổi prop, không có đường biết</td></tr><tr><td>Ai sở hữu pattern riêng SI?</td><td>Repo DS, MR do người SI mở</td><td>Hai vốn từ, <code>validate_spec</code> mất nghĩa</td></tr></tbody></table></div>
+</section>
+<section><div class="sec-head">
+<h2>Nguồn đo</h2></div>
+<p>Quét <code>sapo-invoice-admin-frontend/src</code> (951 file, <code>master</code> 20-08) đối chiếu <code>@sapo-finance/components/manifest.json</code> (67 component, sinh 17-08) và <code>@sapo-finance/patterns/patterns.json</code> (59 pattern) · <code>design-system/packages/mcp</code> · <code>invoice-docs/_template/{srs-uc,srs-domain}.md</code> · <code>sapo-invoice-admin-frontend/.claude/commands/review-code.md</code>. Số LOC component nội bộ và phân tích Tier lấy từ design-system/audit-coverage-invoice.</p>
+<p><strong>Chưa kiểm chứng:</strong> template SRS của <code>sapo-accounting-docs</code> không có trên máy, không tìm thấy qua GitLab search. Phân loại DIRECT/RESHAPE đo ở mức <em>bề mặt import</em>, chưa đo lệch hành vi từng prop — với <code>Text</code>(232), <code>Card</code>(165), <code>Button</code>(142) nên diff prop-level trước khi viết codemod.</p>
+</section>
+</div>

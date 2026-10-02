@@ -12,6 +12,7 @@ Khuôn tạo note đúng cấu trúc — không chứa tri thức thật. Schema
 - `Decision.md`
 - `Knowledge.md`
 - `SRS.md`
+- `DailyReport.md` — format standup ngắn (Hôm qua theo epic / Hôm nay); chi tiết agent: [[10_Projects/sapo-invoice/ai/daily-report]]
 
 Tạo template mới khi có loại note lặp lại đủ nhiều lần cần chuẩn hóa — không tạo trước khi có nhu cầu thật.
 

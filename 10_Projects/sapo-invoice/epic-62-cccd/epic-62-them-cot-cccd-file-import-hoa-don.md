@@ -1,7 +1,7 @@
 ---
 created: 2026-08-05 17:00
 updated: 2026-08-06
-status: Implemented — chờ QA
+status: Đợt 1 + Đợt 2 implemented — chờ QA
 project: "[[10_Projects/sapo-invoice/README]]"
 ---
 
@@ -13,6 +13,41 @@ project: "[[10_Projects/sapo-invoice/README]]"
 - Repo tác động: `sapo-invoice-admin-service` (parser/validate) + `sapo-invoice-admin-frontend` (file mẫu + UI)
 - Child issue tạo ở project `sapo-invoice-admin-service` (convention chung).
 - Tài liệu liên quan: [[epic-62-cursor-prompt-implement]] (prompt đã dùng để code) · [[epic-62-test-cases-cccd]] (ma trận test cho QA)
+- **Bàn giao BA (19/08/2026):** [[README-ban-giao-BA]] — thiếu file mẫu thứ 5 cho HĐ điều chỉnh nhánh *tích tự động*; kèm file gốc + bảng dịch cột
+
+---
+
+## ✅ Đợt 2 (HĐ điều chỉnh) — ĐÃ LÀM XONG 19/08/2026
+
+BA giao đủ **5 file mẫu** ở commit `d21bedc` (invoice-docs), tách đúng 2 biến thể AR theo checkbox tổng tiền. Thế kẹt "thiếu file thứ 5" đã hết — **không cần gộp về 1 mẫu** như phương án dự phòng từng cân nhắc.
+
+| File BA giao | Cột | Khối tổng | → FE asset | Enum BE |
+|---|---|---|---|---|
+| `AD_HD_moi_CO_tu_dong_tinh_toan_them_CCCD` | 37 | — | `DEItyDnc` | `InvoiceHeaderAutomaticallyCalculateImport` |
+| `AI_HD_moi_KHONG_tu_dong_tinh_toan_them_CCCD` | 42 | — | `DEItyDnb` | `InvoiceHeaderProactivelyCalculateImport` |
+| `AL_HD_thay_the_them_CCCD` | 46 | — | `DEItyFna` | `InvoiceHeaderReplacementImport` |
+| `AR_..._CO_tu_dong_tinh_tong_tien_them_CCCD` | 46 | KHÔNG | `DEItyFnb` | `InvoiceHeaderAdjustmentImport` |
+| `AR_..._KHONG_tu_dong_tinh_tong_tien_them_CCCD` | 53 | CÓ | `DEItyFnc` | `InvoiceHeaderAdjustmentProactivelyCalculateImport` |
+
+⚠️ **Bẫy đặt tên:** với HĐ điều chỉnh, `CO_tu_dong` = **ít cột hơn** (46, hệ thống tự tính nên không cần khối tổng), `KHONG_tu_dong` = **nhiều cột hơn** (53). Ngược trực giác — kiểm bằng số cột, đừng tin tên file.
+
+### BE đã sửa (`sapo-invoice-admin-service`)
+- 2 enum AR: thêm `buyer_id_number("Căn cước công dân", "K2:K3")`, `buyer_info` `F1:L1`→`F1:M1`, dịch phải +1 mọi cellRange từ cột K (34 và 41 cellRange)
+- `InvoiceImportExcelAdjustmentModel`: thêm `buyerIdNumber` (chỉ số 10), đánh số lại comment. *Không cần sửa `hasData()`* — hàm đọc AR dùng `AnyFieldValidator.isValid(rowModel, "rowNumber", "hasError")` nên field mới tự tính vào
+- `readInvoiceAdjustmentExcelData`: chèn `case 10`, dịch 34 case ≥10 lên +1
+- `validateInvoiceAdjustmentExcelData`: gọi `validateIdNumber` ngay sau `validatePhoneNumber`
+- `generateRequestInvoiceAdjustmentFromExcelData`: map `setIdNumber` (nay đủ **4/4** template)
+
+### FE đã sửa (`sapo-invoice-admin-frontend`)
+- Đè **cả 5** asset (AD/AI/AL cũng đổi — BA làm lại "Text toàn cột" để chống Excel cắt số 0 đầu), giữ nguyên tên file nên `getDownloadSampleLink` không phải sửa
+- Gộp text ngày về **1 hằng số dùng chung** `SAMPLE_FILE_UPDATED_AT = "19/08/2026"` (thay `MODIFY_SAMPLE_FILE_UPDATED_AT`), **bỏ điều kiện ẩn ở HĐ điều chỉnh** — đúng như đợt 1 đã hẹn. Gỡ `StyledUpdatedAt` không còn dùng
+- ⏳ `// TODO` đổi sang ngày merge master thật vẫn còn treo
+
+### Nghiệm thu
+- Đối chiếu chương trình **5 file mẫu ↔ 5 enum: khớp 100%** cả tên tiêu đề lẫn `cellRange` lẫn số lượng (qua được luật `size` mới siết)
+- Đối chiếu **cột enum ↔ chỉ số `case`** trong cả 4 hàm đọc: không cột nào thiếu case, không lệch chỉ số
+- BE `./gradlew test`: **377 tests, 0 failures**
+- FE `tsc --noEmit` + `oxlint` + `vite build`: sạch, 5 asset vào bundle đúng
 
 ## Yêu cầu tóm tắt
 

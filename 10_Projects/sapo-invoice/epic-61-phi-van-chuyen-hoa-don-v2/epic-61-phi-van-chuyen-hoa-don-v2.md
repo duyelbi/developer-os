@@ -1,6 +1,6 @@
 ---
 created: 2026-08-11 09:15
-updated: 2026-08-12 10:45
+updated: 2026-08-20
 status: Proposed
 project: "[[10_Projects/sapo-invoice/README]]"
 ---
@@ -11,22 +11,40 @@ Work item: `https://git.dktsoft.com:2008/groups/sapo-money/sapo-invoice/-/work_i
 
 **Cập nhật 2026-08-12 — SRS v0.6 (MR `invoice-docs!105`, đã update mới nhất ở invoice-docs).** BA (Dung) tự xác nhận độc lập đúng 2 mâu thuẫn phát hiện qua Figma trước đó (xem mục "Lịch sử phát hiện" cuối note) — nội dung dưới đây đã theo v0.6, không còn open question.
 
+> [!important] Cập nhật 2026-08-20 — **B0 đảo chiều: `order.delivery_fee` là OBJECT ĐƠN, không phải mảng.**
+> **BA xác nhận: một đơn hàng chỉ có ĐÚNG MỘT phí giao hàng.** Điều này **phủ định** kết luận ghi ngày 2026-08-12 ("là mảng, gộp Σ fee") — kết luận đó sai, mọi chỗ trong note này nói về `delivery_fee[]` / `Σ fee` / "gộp nhiều phí" đều đã được sửa lại bên dưới.
+>
+> **Hệ quả:**
+> - Không có bước gộp. `amount = unit_price = delivery_fee.fee` (một giá trị duy nhất).
+> - `OrderResponse.deliveryFee` / `OrderDomain.deliveryFee` **giữ nguyên `DeliveryFeeResponse` / `DeliveryFeeDomain` (object đơn)** — KHÔNG đổi sang `List`. Deserializer chấp nhận cả 2 shape (`DeliveryFeeListDeserializer`) đã bị xóa, đúng.
+> - Bằng chứng độc lập: `sapo-frontend-v3` màn Order (`useDetailOrder.ts`, `useCreateFulfill.ts`) vốn đã đọc `order.delivery_fee.fee` như object đơn từ trước.
+> - **SRS `invoice-docs` ≤ v0.6 §1.1 + BR01 mô tả sai** (mảng + `Σ delivery_fee[].fee`, kèm "Ví dụ 2 — nhiều phí 8.000+2.000"). Cần BA cập nhật SRS; developer-os (note này) là nguồn đúng.
+
+## Quyết định đã chốt
+
+| Ngày | Vấn đề | Quyết định | Nguồn |
+|---|---|---|---|
+| 2026-08-20 | `order.delivery_fee` là mảng hay object đơn? | **Object đơn** — một đơn chỉ có ĐÚNG MỘT phí giao hàng. Không gộp `Σ fee`. | BA |
+| 2026-08-20 | `auto_adjust_shipping_fee` áp theo cấu hình lúc nào? | **Phương án A — đọc cấu hình hiện tại tại thời điểm chạy điều chỉnh**, không snapshot theo hóa đơn gốc. Hệ quả (hóa đơn cũ bị điều chỉnh theo quy tắc mới) đã được chấp nhận. Không phải sửa code. | BA |
+| 2026-08-20 | Tên marker dòng phí | Đổi cho gọn & nhất quán: field Java **`shippingLine`**, JSON/FE **`shipping_line`**. **Cột DB giữ `IsShippingLine`** (đã migrate V8, không đổi để khỏi phải ALTER lại các môi trường). SRS ≤ v0.6 vẫn ghi `is_shipping_line` → **cần BA cập nhật**. Có test khóa tên JSON (`EInvoiceLineItemResponseJsonTest`). | Yêu cầu dev |
+| 2026-08-20 | `auto_adjust_shipping_fee` có áp cho điều chỉnh **thủ công** không? | **Chỉ áp cho Auto Invoice.** Xác minh code: `createAdjustmentAutoDraft` là đường duy nhất dựng hóa đơn điều chỉnh từ baseline, và chỉ được gọi từ `AutoInvoiceExecutionServiceImpl`. | Đọc code |
+
 ## Mục tiêu
 
-Cho phép merchant **cấu hình cách thể hiện phí vận chuyển của order lên hóa đơn V2** (`invoice-core-v2`), thay cho hành vi mặc định hiện tại (hóa đơn dựng từ order **không** lấy/không thể hiện phí vận chuyển). Ưu tiên chế độ **"Thêm 1 dòng phí vận chuyển"** (`separate_line`) — gộp toàn bộ phí giao hàng của order thành **một dòng** hàng hóa/dịch vụ (`item_type = 1`) trên hóa đơn, với **tên dòng cấu hình được** và **tùy chọn tự động điều chỉnh** khi có hóa đơn điều chỉnh tự động.
+Cho phép merchant **cấu hình cách thể hiện phí vận chuyển của order lên hóa đơn V2** (`invoice-core-v2`), thay cho hành vi mặc định hiện tại (hóa đơn dựng từ order **không** lấy/không thể hiện phí vận chuyển). Ưu tiên chế độ **"Thêm 1 dòng phí vận chuyển"** (`separate_line`) — đưa phí giao hàng của order thành **một dòng** hàng hóa/dịch vụ (`item_type = 1`) trên hóa đơn, với **tên dòng cấu hình được** và **tùy chọn tự động điều chỉnh** khi có hóa đơn điều chỉnh tự động.
 
 Phạm vi kênh: **Invoice Core V2** (lớp trung gian Sapo POS ↔ nhà cung cấp HĐĐT). Chỉ áp khi nhà cung cấp phát hành là **Sapo Invoice**. Áp cho cả hóa đơn **GTGT** và **Bán hàng**; cả lập thủ công từ order (`create_draft`) và **Auto Invoice**. Chỉ hỗ trợ **VND**.
 
 ## Bối cảnh — nguồn dữ liệu `order.delivery_fee`
 
-- **Sapo POS/Omni** là nguồn order chứa phí vận chuyển, dạng `order.delivery_fee` — SRS mô tả là **mảng** `delivery_fee[]` (một order có thể có một hoặc nhiều phí), mỗi phần tử phẳng `{ shipping_cost_id, shipping_cost_name, fee }`.
-- **Đại lượng nguồn:** `F = Σ delivery_fee[].fee` — tổng mọi phí của order.
+- **Sapo POS/Omni** là nguồn order chứa phí vận chuyển, dạng `order.delivery_fee` — **xác nhận (2026-08-20, BA)**: đây là **object đơn** `{ shipping_cost_id, shipping_cost_name, fee }`; **một đơn chỉ có đúng một phí giao hàng**.
+- **Đại lượng nguồn:** `F = delivery_fee.fee` — một giá trị duy nhất, không có bước gộp.
 - **KHÁC hệ "V3"** (`shipping_lines[]`, có thuế + chiết khấu + phân bổ, thuộc `invoice-app` — xem mục "Xác nhận chéo" bên dưới, hai hệ hoàn toàn tách biệt).
 - **V2 không có thuế/chiết khấu cho phí vận chuyển:** `delivery_fee` không mang `tax_lines` và không mang `discount_allocations` → dòng phí VC: `tax_name=KCT`, `tax_amount=0`, `total_discount_amount=0`. Công thức **không** rẽ theo `order.tax_treatment` (inclusive/exclusive) — mỗi `fee` là giá cuối khách trả.
 - Cấu hình (`shipping_fee_mode`, `shipping_fee_item_name`, `auto_adjust_shipping_fee`) là **cài đặt cấp store**, đọc/ghi theo `store_id`/`tenant_id` lấy từ **session server**, không từ client.
 - Sapo Invoice (nhà cung cấp duy nhất áp dụng) **không tự suy ra phí VC** — nếu V2 không gửi dòng phí thì hóa đơn không có phí VC (hành vi mặc định hiện tại).
 
-⚠️ **`B0` — vẫn còn mở, KHÁC với 2 mâu thuẫn đã resolve ở v0.6:** xem mục "Sai lệch chưa giải quyết" bên dưới — SRS giả định `delivery_fee` là mảng nhưng code thật (`sapo-einvoice-service`) hiện là object đơn. Đây là câu hỏi kỹ thuật riêng, chưa được MR 105 đề cập, vẫn cần xác nhận với BA/Omni trước khi merge thật.
+✅ **`B0` — đã resolve (2026-08-20, BA).** `order.delivery_fee` là **object đơn**: một đơn chỉ có **một** phí giao hàng. ~~(2026-08-12: user xác nhận là mảng — kết luận này SAI, đã bị BA phủ định.)~~ **Hệ quả code:** `OrderResponse.deliveryFee`/`OrderDomain.deliveryFee` (`sapo-einvoice-service`) **giữ nguyên object đơn**, KHÔNG đổi sang `List`. Xem mục B0 bên dưới.
 
 ## Phạm vi
 
@@ -77,24 +95,24 @@ AC-11 (v0.6, mới): dòng phí vận chuyển dựng ra mang cờ **`is_shippin
 
 | ID | Quy tắc |
 |----|---------|
-| `BR01` | Gộp **toàn bộ** phí vận chuyển của order thành **đúng một** dòng phí VC (`item_type=1` products, `quantity=1`), `amount = Σ delivery_fee[].fee`. Điều kiện tạo dòng: order có ≥ 1 phí (không phụ thuộc giá trị — `Σ fee=0` vẫn tạo dòng 0đ, xem BR07); order không có phí → không tạo. |
+| `BR01` | Phí vận chuyển của order → **đúng một** dòng phí VC (`item_type=1` products, `quantity=1`), `amount = delivery_fee.fee`. **Một đơn chỉ có một phí** (BA xác nhận 2026-08-20) nên không có bước gộp. Điều kiện tạo dòng: `delivery_fee != null` (không phụ thuộc giá trị — `fee=0` vẫn tạo dòng 0đ, xem BR07); `delivery_fee` null → không tạo. |
 | `BR02` | Đổi chế độ phí VC chỉ áp cho hóa đơn được tạo **sau** thời điểm lưu cấu hình; hóa đơn đã tạo trước đó (kể cả nháp, sau này mở sửa lại) **không** tự áp cấu hình mới — mốc tính theo thời điểm **tạo**, không phải thời điểm sửa. |
 | `BR03` | Dòng phí VC **không thuế & không chiết khấu**: `tax_name=KCT` (`tax_rate=0`, `tax_amount=0`) — dùng `KCT` (không chịu thuế), không dùng `KKKNT`; mọi field chiết khấu = 0. Công thức không rẽ theo `tax_treatment`. |
 | `BR04` | Mọi thao tác mở/sửa/phát hành HĐ và đọc/ghi cấu hình chỉ cho store hiện tại. `store_id`/`tenant_id` lấy từ session. Truy `invoice_id`/cấu hình không thuộc store → **404** (không 403). |
 | `BR05` **(v0.6, viết lại)** | `item_name` của dòng phí VC **lấy từ cấu hình `shipping_fee_item_name`** của store (**không** lấy `delivery_fee.shipping_cost_name`). Cấu hình **autofill mặc định "Phí giao hàng"**, **bắt buộc — không cho lưu rỗng**, **tối đa 255 ký tự**. Đổi tên chỉ áp hóa đơn tạo sau (đồng bộ BR02); hóa đơn đã tạo giữ tên đã lưu. `unit_name` để trống. Chỉ áp mode `separate_line`. |
 | `BR06` | Server **tính lại** trường tiền dòng phí VC trên giá trị **chưa làm tròn**, **làm tròn HALF_UP khi truyền sang nhà cung cấp** — không tin số client. Dòng phí cộng vào tổng hóa đơn như dòng `products`. |
-| `BR07` | Dòng phí **0đ** (khi `Σ fee=0`) vẫn được tạo và phát hành bình thường; `tax_name` vẫn `KCT`. |
-| `BR08` **(v0.6, viết lại)** | Dòng phí VC chịu **chung** logic/cấu hình cấp hóa đơn có sẵn (đổi ký hiệu, "không hiện chiết khấu theo nguồn đơn"...) — **trừ điều chỉnh hóa đơn, nay có điều kiện:** theo checkbox `auto_adjust_shipping_fee` (mặc định bỏ tích) — **tích** → khi điều chỉnh **toàn bộ** hóa đơn, dòng phí VC **bị ghi âm** cùng các dòng khác (nhận biết qua `is_shipping_line`, BR10); **bỏ tích** → **loại trừ** dòng phí khỏi điều chỉnh. Nếu store bật *Tự động tạo và phát hành hóa đơn điều chỉnh* thì diễn ra tự động. Dòng `KCT` không thuộc diện giảm thuế theo Nghị quyết. |
+| `BR07` | Dòng phí **0đ** (khi `fee=0`, hoặc `fee` null → coi như 0) vẫn được tạo và phát hành bình thường; `tax_name` vẫn `KCT`. |
+| `BR08` **(v0.6, viết lại)** | Dòng phí VC chịu **chung** logic/cấu hình cấp hóa đơn có sẵn (đổi ký hiệu, "không hiện chiết khấu theo nguồn đơn"...) — **trừ điều chỉnh hóa đơn, nay có điều kiện:** theo checkbox `auto_adjust_shipping_fee` (mặc định bỏ tích) — **tích** → khi điều chỉnh **toàn bộ** hóa đơn, dòng phí VC **bị ghi âm** cùng các dòng khác (nhận biết qua `is_shipping_line`, BR10); **bỏ tích** → **loại trừ** dòng phí khỏi điều chỉnh. Nếu store bật *Tự động tạo và phát hành hóa đơn điều chỉnh* thì diễn ra tự động. Dòng `KCT` không thuộc diện giảm thuế theo Nghị quyết. **Bổ sung 2026-08-20 (BA chốt, phương án A):** checkbox đọc theo **cấu hình hiện tại của store tại thời điểm chạy điều chỉnh**, KHÔNG snapshot theo hóa đơn gốc → hóa đơn phát hành lúc đang bỏ tích, sau đó store tích lại, thì bản điều chỉnh **vẫn ghi âm** dòng phí. Đây là **ngoại lệ có chủ ý** so với BR02 và so với phần còn lại của hóa đơn điều chỉnh (buyer/seller/tỷ lệ giảm thuế/custom fields đều snapshot từ baseline). |
 | `BR09` | **Giới hạn nhà cung cấp — chỉ Sapo Invoice:** cấu hình + dựng dòng phí VC chỉ áp khi `publishing_provider=sapo_invoice`. Đổi provider khỏi Sapo Invoice → dòng phí bị loại + tính lại tổng (tự động, KHÔNG cảnh báo); đổi lại → dựng lại theo cấu hình. |
-| `BR10` **(v0.6, mới)** | **Marker nhận biết dòng phí VC (`is_shipping_line`):** dòng phí vận chuyển dựng ra mang cờ `is_shipping_line = true` để hệ thống **nhận biết** dòng phí khi điều chỉnh hóa đơn (phục vụ BR08). Các dòng khác `is_shipping_line = false`/null. Marker chỉ để nhận biết, **không** đổi logic thuế/tiền của dòng phí. |
+| `BR10` **(v0.6, mới)** | *(Tên thực tế trong code/API: **`shipping_line`** — xem bảng Quyết định.)* **Marker nhận biết dòng phí VC:** dòng phí vận chuyển dựng ra mang cờ `is_shipping_line = true` để hệ thống **nhận biết** dòng phí khi điều chỉnh hóa đơn (phục vụ BR08). Các dòng khác `is_shipping_line = false`/null. Marker chỉ để nhận biết, **không** đổi logic thuế/tiền của dòng phí. |
 
 ## Domain Model — công thức dòng phí vận chuyển
 
-Chỉ hỗ trợ VND (`exchange_rate=1`). Dòng phí VC là **một** dòng `item_type=1` (products), `is_shipping_line=true`, gộp toàn bộ phí vận chuyển của order.
+Chỉ hỗ trợ VND (`exchange_rate=1`). Dòng phí VC là **một** dòng `item_type=1` (products), `is_shipping_line=true`, mang phí vận chuyển duy nhất của order.
 
 **Nguyên tắc chung:** server tính lại trên giá trị **chưa làm tròn**; **làm tròn HALF_UP** chỉ áp khi truyền sang nhà cung cấp. V2 không có thuế/chiết khấu cho phí VC → dòng phí luôn `KCT`, không rẽ theo `tax_treatment`.
 
-**Bảng dựng dòng** (điều kiện: order có ≥ 1 phí; `F = Σ delivery_fee[].fee`):
+**Bảng dựng dòng** (điều kiện: `delivery_fee != null`; `F = delivery_fee.fee`):
 
 | Trường V2 (`line_items[i]`) | Giá trị dòng phí VC |
 | :--- | :--- |
@@ -114,7 +132,7 @@ Chỉ hỗ trợ VND (`exchange_rate=1`). Dòng phí VC là **một** dòng `ite
 
 **Ví dụ 1 (1 phí, order SON02820, `fee=10000`, `tax_treatment=inclusive`):** `F=10000` → dòng phí: `item_type=1`, `item_name` theo cấu hình (mặc định "Phí giao hàng"), `quantity=1`, `KCT`, `unit_price=amount=10000`, `amount_without_vat=10000`, `tax_amount=0`. Kết quả không đổi dù `inclusive`/`exclusive`.
 
-**Ví dụ 2 (nhiều phí):** đơn có 2 phí `8000` + `2000` → `F=10000` → dòng phí gộp y hệt ví dụ 1, `quantity=1`.
+~~**Ví dụ 2 (nhiều phí):** đơn có 2 phí `8000` + `2000` → `F=10000`.~~ **Bỏ (2026-08-20)** — không tồn tại: một đơn chỉ có một phí giao hàng.
 
 **Ảnh hưởng tổng hóa đơn (dòng phí là `item_type=1` → cộng như dòng hàng hóa/dịch vụ):**
 - `total_sale_amount += F`, `total_discount_amount += 0`, `total_amount_without_vat += F`, `total_vatamount += 0` (KCT), `total_amount += F`.
@@ -165,28 +183,24 @@ Hành vi A→B: (1) loại dòng phí VC khỏi `line_items[]`, không gửi pay
 
 ---
 
-## ⚠️ Sai lệch chưa giải quyết — SRS giả định `delivery_fee` là mảng, code thật là object đơn
+## ✅ B0 — đã resolve (2026-08-20): `delivery_fee` là **object đơn**, code giữ nguyên type
 
-**Khác với 2 mâu thuẫn đã resolve ở v0.6 (xem "Lịch sử phát hiện" bên dưới) — cái này MR 105 không đề cập, vẫn còn mở.**
+SRS ≤ v0.6 chốt: *"order có thể có MỘT HOẶC NHIỀU phí vận chuyển"* — `delivery_fee[]` là mảng, `amount = Σ delivery_fee[].fee`. **SAI.** ~~User xác nhận (2026-08-12): là mảng.~~ → **BA xác nhận lại (2026-08-20): object đơn, một đơn chỉ có MỘT phí.** Code giữ object đơn; SRS cần BA sửa.
 
-SRS chốt: *"order có thể có MỘT HOẶC NHIỀU phí vận chuyển"* — `order.delivery_fee` là **mảng** `delivery_fee[]`, công thức `amount = Σ delivery_fee[].fee`.
-
-**Code thật trong `sapo-einvoice-service` hiện tại lại là object đơn, không phải mảng:**
+**Code thật trong `sapo-einvoice-service` tại thời điểm viết note này vẫn là object đơn, chưa khớp** — đây là việc cần sửa khi implement, không phải câu hỏi mở nữa:
 
 ```java
-// OrderResponse.java:57 và OrderDomain.java:58
-private DeliveryFeeResponse deliveryFee;   // KHÔNG phải List<DeliveryFeeResponse>
-private DeliveryFeeDomain deliveryFee;
+// OrderResponse.java:57 và OrderDomain.java:58 — HIỆN TẠI (cần đổi)
+private DeliveryFeeResponse deliveryFee;   // → List<DeliveryFeeResponse>
+private DeliveryFeeDomain deliveryFee;     // → List<DeliveryFeeDomain>
 ```
 
-`DeliveryFeeDomain`/`DeliveryFeeResponse` (`model/order/`) đúng 3 field như SRS mô tả (`shippingCostId`, `shippingCostName`, `fee`) — nhưng là **1 object**, không phải list. Thêm nữa: **`getDeliveryFee()` hiện KHÔNG được gọi ở bất kỳ đâu trong codebase** — field này được parse từ order API nhưng hoàn toàn chưa dùng tới trong flow tạo hóa đơn (xác nhận bằng `grep -rn "getDeliveryFee()" src/main/java` → rỗng).
+`DeliveryFeeDomain`/`DeliveryFeeResponse` (`model/order/`) đúng 3 field như SRS mô tả (`shippingCostId`, `shippingCostName`, `fee`) — chỉ cần đổi wrapper type sang `List`, không đổi field bên trong. **`getDeliveryFee()` hiện KHÔNG được gọi ở bất kỳ đâu trong codebase** (`grep -rn "getDeliveryFee()" src/main/java` → rỗng) — rủi ro đổi type thấp, chưa có logic nào phụ thuộc vào shape cũ.
 
-**Cần làm rõ trước khi code (điều tra sau, theo quyết định của user):**
-1. Omni/POS thực tế trả `delivery_fee` là mảng hay object đơn?
-2. Nếu Omni trả mảng thật → `OrderResponse`/`OrderDomain` cần đổi field này thành `List<DeliveryFeeResponse>` (rủi ro thấp — grep hiện tại cho thấy field chưa dùng ở đâu khác).
-3. Nếu Omni luôn chỉ trả 1 phí → SRS nên sửa lại đơn giản hơn (bỏ hẳn phần Σ/gộp nhiều phí).
-
-→ **Nên hỏi lại BA (Nguyễn Thị Thu Dung) hoặc đối chiếu trực tiếp 1 order thật có `delivery_fee` trước khi bắt đầu code.**
+**Việc cần làm khi code (Cursor prompt A4/A5 cập nhật theo hướng này):**
+1. Đổi `OrderResponse.deliveryFee`/`OrderDomain.deliveryFee` sang `List<...>`.
+2. Kiểm tra JSON mapping (Jackson `@JsonProperty`/deserializer) của field này đọc đúng mảng từ order API thật — chưa có bằng chứng runtime nào (field chưa từng dùng), nên **buổi test đầu tiên sau khi đổi type nên log/verify JSON thật trả về từ Omni** trước khi tin code compile được là đủ.
+3. ~~`buildShippingFeeLineItem` (A5) đổi từ đọc 1 `fee` sang gộp `Σ delivery_fee[].fee`.~~ **Bỏ (2026-08-20)** — giữ đọc 1 `fee` từ object đơn.
 
 ## Repo đích — SỬA LẠI hiểu nhầm ban đầu
 

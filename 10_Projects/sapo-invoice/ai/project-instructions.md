@@ -136,6 +136,10 @@ Severity: 🔴 Critical (blocker) / 🟡 Major (should fix) / 🟢 Minor (nice t
 - Error: `transformErrors` (form) / `handleErrorApiV2` (toast) / `Sentry` (unexpected)
 - UI: `@sapo/ui-components`
 
+## Daily report / standup
+
+Khi hỏi báo cáo daily / standup / hôm qua–hôm nay → theo [[10_Projects/sapo-invoice/ai/daily-report]]: gom theo epic, bullet ngắn, có `gap` nếu blocker, mục **Hôm nay** cho ưu tiên. Template: [[40_Templates/DailyReport]].
+
 ## Communication style
 
 - ⚠️ warnings/assumptions | ✅ confirmed/good | ❌ issues/problems

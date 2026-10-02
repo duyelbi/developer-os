@@ -11,7 +11,7 @@ Chuẩn hóa cách cộng tác với Claude/Cursor — Content Module kép: vừ
 - `Prompts/` — [[30_AI/Prompts/developer-os-solution-architect|Master prompt]] cho chính dự án developer-os
 - `Rules/` — [[30_AI/Rules/senior-engineering-practices|Senior Engineering Practices]], nguyên tắc tổng quát áp dụng nhiều dự án
 
-Rules/prompt **đặc thù một dự án cụ thể** (vd Java/React của Sapo Invoice) không nằm ở đây — xem `10_Projects/<ten-du-an>/ai/`.
+Rules/prompt **đặc thù một dự án cụ thể** (vd Java/React của Sapo Invoice) không nằm ở đây — xem `10_Projects/<ten-du-an>/ai/` (vd daily report: [[10_Projects/sapo-invoice/ai/daily-report]]).
 
 `Claude/`, `Cursor/`, `MCP/`, `Workflow/` sẽ tạo khi có nội dung thật, không tạo rỗng trước (xem `CONVENTION.md` §7).
 

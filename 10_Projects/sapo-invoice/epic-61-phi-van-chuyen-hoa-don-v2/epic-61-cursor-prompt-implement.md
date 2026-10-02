@@ -1,7 +1,7 @@
 ---
 created: 2026-08-11 17:00
-updated: 2026-08-12 10:45
-status: Draft — chưa chạy
+updated: 2026-08-20
+status: Superseded — đã implement; mục B0 trong prompt SAI, xem banner đầu file
 project: "[[10_Projects/sapo-invoice/README]]"
 ---
 
@@ -9,7 +9,15 @@ project: "[[10_Projects/sapo-invoice/README]]"
 
 Plan/SRS đầy đủ: [[epic-61-phi-van-chuyen-hoa-don-v2]] · SRS gốc đã cập nhật: `invoice-docs!105` (v0.6)
 
-⚠️ **Chưa giải quyết B0 (shape `order.delivery_fee`)** trước khi chạy prompt này — SRS v0.6 KHÔNG đề cập vấn đề này (nó về 2 điểm khác — tên dòng phí + checkbox điều chỉnh). B0 vẫn cần xác nhận riêng với BA/Omni. Phần Backend A5 đã viết theo shape hiện tại (object đơn) kèm TODO rõ ràng.
+> [!warning] 2026-08-20 — prompt này đã chạy xong, và phần B0 trong đó **SAI**. Đừng dùng lại nguyên văn.
+> **BA xác nhận: `order.delivery_fee` là OBJECT ĐƠN — một đơn chỉ có ĐÚNG MỘT phí giao hàng.** Kết luận "là mảng" ghi 2026-08-12 đã bị phủ định.
+>
+> Cụ thể phải bỏ qua trong prompt bên dưới:
+> - Mục "✅ B0 đã resolve — `order.delivery_fee` là mảng, ĐỔI TYPE" → **KHÔNG đổi** `OrderResponse.deliveryFee`/`OrderDomain.deliveryFee` sang `List`; giữ `DeliveryFeeResponse`/`DeliveryFeeDomain`.
+> - Code mẫu `buildShippingFeeLineItem` gộp `Σ fee` → thay bằng đọc thẳng `deliveryFee.getFee()`.
+> - Checklist "Order có nhiều phần tử `delivery_fee[]`" → bỏ, kịch bản không tồn tại.
+>
+> Trạng thái thật của code sau khi implement: xem [[epic-61-phi-van-chuyen-hoa-don-v2]] (đã sửa) — object đơn, `amount = delivery_fee.fee`, không gộp.
 
 Copy toàn bộ phần trong khung dưới đây và dán vào Cursor (mở workspace `/Users/sapo/invoice`).
 
@@ -41,16 +49,20 @@ Epic gốc: GitLab `&61` (group sapo-money/sapo-invoice, module `invoice-core-v2
 
 Thêm cấu hình cấp store gồm **3 phần**: (1) `shipping_fee_mode` (`none` mặc định / `separate_line`), (2) `shipping_fee_item_name` (tên dòng phí, bắt buộc, autofill "Phí giao hàng", ≤255 ký tự), (3) `auto_adjust_shipping_fee` (checkbox, mặc định bỏ tích). Khi `separate_line` + provider = Sapo Invoice + order có phí vận chuyển → tự động thêm 1 dòng phí vào hóa đơn khi tạo draft (thủ công lẫn Auto Invoice). Đổi provider khỏi Sapo Invoice khi **sửa** hóa đơn → dòng phí bị loại (A7 + B4, vì luồng sửa không tự rebuild từ order). Khi hệ thống tự tạo hóa đơn điều chỉnh → dòng phí bị ghi âm hay loại trừ tùy `auto_adjust_shipping_fee` (A8, mục hoàn toàn mới so với v0.5).
 
-## ⚠️ Chưa xác nhận — shape `order.delivery_fee` (B0, KHÔNG liên quan SRS v0.6)
+## ⛔ B0 — mục này SAI (xem banner đầu file), giữ lại làm lịch sử
 
-SRS giả định `order.delivery_fee` là **mảng** (nhiều phí, `Σ fee`). Code thật hiện tại:
+~~`order.delivery_fee` là **mảng** (nhiều phí, `Σ fee`).~~ **BA xác nhận 2026-08-20: object đơn, một đơn một phí.** Code giữ nguyên object đơn — **bỏ toàn bộ hướng dẫn đổi type bên dưới**:
 
 ```java
-// OrderResponse.java:57, OrderDomain.java:58
-private DeliveryFeeResponse deliveryFee;   // OBJECT ĐƠN, không phải List
+// OrderResponse.java:57, OrderDomain.java:58 — TRẠNG THÁI HIỆN TẠI, CẦN SỬA
+private DeliveryFeeResponse deliveryFee;   // object đơn — đổi thành List<DeliveryFeeResponse>
+private DeliveryFeeDomain deliveryFee;     // OrderDomain.java:58 — đổi thành List<DeliveryFeeDomain>
 ```
 
-`getDeliveryFee()` hiện **không được gọi ở đâu** trong codebase (an toàn để sửa type nếu cần) — nhưng **task này code theo shape HIỆN TẠI (object đơn, 1 phí)**, không tự ý đổi field sang `List`. Nếu sau này xác nhận là mảng, chỉ cần sửa hàm `buildShippingFeeLineItem` ở mục A4 (đã cô lập logic đọc `delivery_fee` vào đúng 1 hàm cho việc này).
+**Bước bắt buộc trước A5:**
+1. Đổi field `deliveryFee` trong `OrderResponse.java` và `OrderDomain.java` sang `List<DeliveryFeeResponse>`/`List<DeliveryFeeDomain>`. `getDeliveryFee()` hiện **không được gọi ở đâu** trong codebase — an toàn, không phá luồng khác.
+2. Kiểm tra Jackson mapping (annotation `@JsonProperty`/deserializer nếu có) đọc đúng field này dưới dạng mảng JSON từ order API — field này **chưa từng chạy runtime thật**, nên lần đầu deploy lên dev2/staging cần **log ra JSON thật** nhận được để verify shape trước khi tin.
+3. `buildShippingFeeLineItem` (A5 dưới) viết theo `List`, gộp `Σ delivery_fee[].fee` — không phải đọc 1 `fee` đơn như bản trước.
 
 ---
 
@@ -197,16 +209,19 @@ public boolean isAutoAdjustShippingFee(long tenantId) {
 ```java
 private EInvoiceLineItemDTO buildShippingFeeLineItem(OrderResponse orderResponse, long tenantId,
         long orderId, int lineNumber) {
-    // TODO: SRS giả định order.delivery_fee là MẢNG (nhiều phí, Σ fee).
-    // Code hiện tại (OrderResponse.getDeliveryFee()) trả 1 OBJECT ĐƠN — implement theo shape này (B0, chưa xác nhận với BA/Omni).
-    // Nếu sau này xác nhận Omni trả mảng, sửa lại đúng hàm này (đổi tham số đầu vào,
-    // và tổng hợp Σ fee thay vì đọc 1 fee đơn).
-    DeliveryFeeResponse deliveryFee = orderResponse.getDeliveryFee();
-    if (deliveryFee == null || deliveryFee.getFee() == null) {
+    // ⛔ SAI (2026-08-20): delivery_fee là OBJECT ĐƠN, không gộp. Code thật dùng
+    // DeliveryFeeResponse deliveryFee = orderResponse.getDeliveryFee(); BigDecimal fee = deliveryFee.getFee();
+    // Đoạn dưới giữ lại làm lịch sử — xem banner đầu file.
+    List<DeliveryFeeResponse> deliveryFees = orderResponse.getDeliveryFee();
+    if (deliveryFees == null || deliveryFees.isEmpty()) {
         return null; // Không có phí vận chuyển -> không tạo dòng (BR01)
     }
 
-    BigDecimal fee = deliveryFee.getFee().setScale(3, RoundingMode.HALF_UP);
+    BigDecimal fee = deliveryFees.stream()
+            .map(DeliveryFeeResponse::getFee)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add)
+            .setScale(3, RoundingMode.HALF_UP);
 
     EInvoiceLineItemDTO lineItem = new EInvoiceLineItemDTO();
     lineItem.setOrderId(orderId);
@@ -280,7 +295,9 @@ GO
 
 ⚠️ **File này KHÔNG tự chạy khi deploy** (xem cảnh báo Flyway ở "Đọc trước khi code") — báo người quản lý deploy chạy tay câu SQL trên SQL Server từng môi trường (dev2/staging/prod) **trước hoặc cùng lúc** deploy code. Cột nullable, không default khác NULL → dữ liệu cũ không bị ảnh hưởng, không cần backfill.
 
-**Thêm field `isShippingLine` (Boolean) vào 4 class** — TÊN GIỐNG HỆT NHAU ở cả 4 nơi:
+⛔ **Đổi tên 2026-08-20:** field Java nay là **`shippingLine`** (không phải `isShippingLine`), tên JSON/FE là **`shipping_line`** (không phải `is_shipping_line`), và chỉ còn **3 class** (`EInvoiceLineItemRequest` đã bỏ — marker do server đặt, không nhận từ client). **Cột DB vẫn `IsShippingLine`** (đã migrate V8, không đổi). `EInvoiceLineItemResponseJsonTest` khóa tên JSON lại.
+
+~~**Thêm field `isShippingLine` (Boolean) vào 4 class** — TÊN GIỐNG HỆT NHAU ở cả 4 nơi:~~
 - `domain/EInvoiceLineItem.java` (entity — map trực tiếp cột `IsShippingLine`)
 - `model/einvoice/EInvoiceLineItemDTO.java`
 - `model/einvoice/EInvoiceLineItemRequest.java`
@@ -466,8 +483,9 @@ npm run type-check
 - [ ] Tenant `shipping_fee_mode=none` (mặc định) + order có `delivery_fee` → tạo draft, hóa đơn **không** có dòng phí (hành vi hiện tại giữ nguyên)
 - [ ] Set `separate_line` + tên dòng phí tùy chỉnh (vd "Cước vận chuyển"), provider = Sapo Invoice, order có `delivery_fee.fee > 0` → tạo draft → có đúng 1 dòng tên **đúng như đã cấu hình** (không phải "Phí giao hàng" cứng), `item_type=1`, `tax_name=KCT`, `amount` = đúng `fee`, cộng đúng vào tổng
 - [ ] Đổi `shipping_fee_item_name` sang tên khác **sau khi** hóa đơn trên đã tạo → mở lại hóa đơn cũ, dòng phí **vẫn giữ tên cũ** (snapshot, BR02/BR05) — chỉ hóa đơn tạo mới sau đó dùng tên mới
+- [x] ~~Order có **nhiều phần tử** `delivery_fee[]` (vd 2 phí 8.000 + 2.000) → gộp Σ fee~~ **BỎ (2026-08-20)** — một đơn chỉ có một phí giao hàng
 - [ ] Order có `delivery_fee.fee = 0` → vẫn tạo dòng phí 0đ (BR07), không lỗi
-- [ ] Order **không có** `delivery_fee` (null) → không tạo dòng phí, không lỗi
+- [ ] Order **không có** `delivery_fee` (mảng rỗng/null) → không tạo dòng phí, không lỗi
 - [ ] Provider ≠ Sapo Invoice (dù order có `delivery_fee` và `separate_line`) → không tạo dòng phí (BR09)
 - [ ] Auto Invoice tạo draft (không qua form thủ công) cũng có dòng phí đúng như luồng thủ công
 - [ ] Publish hóa đơn có dòng phí VC sang Sapo Invoice — dòng phí xuất hiện trong payload gửi đi, số tiền khớp
@@ -487,7 +505,7 @@ npm run type-check
 - **KHÔNG chạy `git add` / `git commit`** — để nguyên unstaged, tôi tự review rồi tự stage.
 - **CÓ migration lần này** (`V8__add_is_shipping_line_to_einvoice_lineitems.sql`, mục A6) — khác v0.5, đã đổi quyết định sau khi phát hiện không có cách an toàn nhận diện dòng phí VC nếu không có field riêng. Nhớ báo người quản lý deploy chạy tay (Flyway không tự áp dụng — xem "Đọc trước khi code").
 - **KHÔNG sửa** `SapoInvoiceService.java:677` (hardcode `setItemType("products")`) — thuộc epic khác (&46), ngoài phạm vi task này dù có liên quan.
-- **KHÔNG tự đổi** `OrderResponse.deliveryFee`/`OrderDomain.deliveryFee` từ object đơn sang `List` — giữ nguyên shape hiện tại cho tới khi có xác nhận từ BA/Omni (B0, xem đầu file).
+- **PHẢI đổi** `OrderResponse.deliveryFee`/`OrderDomain.deliveryFee` từ object đơn sang `List<DeliveryFeeResponse>`/`List<DeliveryFeeDomain>` (B0 đã resolve, xem đầu file) — đây là bước bắt buộc trước A5, không phải tùy chọn.
 - **KHÔNG động vào field `item_type` ở FE** (`FormEinvoice.tsx:921`, đang chứa `variant.product_type`) — xung đột đã biết thuộc epic &46, không tự "tiện tay sửa luôn". Task này dùng `is_shipping_line` để né hẳn field này.
 - **KHÔNG thêm field `is_shipping_line`/tương đương vào `SapoInvoiceLineItem.java`** (payload gửi Sapo Invoice) — chỉ là marker nội bộ.
 - Comment code: tiếng Việt cho logic nghiệp vụ, technical term giữ tiếng Anh (đúng convention repo).
@@ -499,7 +517,7 @@ npm run type-check
 
 ## Ghi chú khi dùng
 
-- **Chưa chạy prompt này.** Trước khi chạy, cân nhắc xác nhận B0 (shape `delivery_fee`) với BA/Omni — SRS v0.6 không đề cập vấn đề này, vẫn là câu hỏi mở riêng.
+- **Chưa chạy prompt này.** B0 (shape `delivery_fee`) đã resolve 2026-08-12 (user xác nhận là mảng) — không còn là điều kiện chặn, nhưng khuyến nghị verify JSON thật từ order API ngay lần đầu chạy trên dev2/staging (field `getDeliveryFee()` chưa từng chạy runtime thật trước đây).
 - **Cập nhật 2026-08-12 theo SRS v0.6 (`invoice-docs!105`, đã merge/update mới nhất):** thêm 2 setting mới (`shipping_fee_item_name`, `auto_adjust_shipping_fee`), đổi marker từ ý tưởng ban đầu (`LineSource` string, tự đề xuất) sang đúng field SRS đã chốt (`is_shipping_line` boolean, BR10) — BA độc lập đi đến cùng kết luận "cần marker riêng" qua phân tích khác, khớp hướng kỹ thuật đã trace (đọc `edit()`, `buildAdjustmentLineItemsFromBaseline`, loại trừ `itemCode`/`item_name` làm nơi đánh dấu).
 - **A8 (điều chỉnh tự động) là mục hoàn toàn mới** — v0.5 không có, chỉ nói chung chung "dòng phí chịu chung logic điều chỉnh". Đã trace kỹ: chỉ 1 điểm chèn (`buildAdjustmentLineItemsFromBaseline`), không phức tạp như lo ngại ban đầu.
 - Phần A1-A7 (trừ đoạn `is_shipping_line`) đã đọc trực tiếp code thật, có số dòng chính xác tại thời điểm viết (2026-08-11/12) — nếu code đã đổi nhiều từ lúc đó, số dòng có thể trôi, nhưng tên hàm/field vẫn nên còn đúng.

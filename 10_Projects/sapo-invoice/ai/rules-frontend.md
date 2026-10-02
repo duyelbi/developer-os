@@ -116,6 +116,7 @@ Sentry.captureException(error)
 - `React.FC<Props>` với explicit Props interface
 - Event handlers: `handleXxx` naming (`handleSubmit`, `handleRowClick`)
 - **KHÔNG** anonymous functions trong JSX event handlers
+- Khoảng trắng giữa chữ và JSX (`Link`, `Text`, …): dùng `&nbsp;` — JSX nuốt space khi xuống dòng. **KHÔNG** `{" "}` hay bọc cả câu trong `{"… "}`
 
 ```typescript
 // ĐÚNG
