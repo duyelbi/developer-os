@@ -78,6 +78,7 @@ Phần chưa migrate (thư viện prompt theo bước, template `SELFTEST_CHECKL
 | [[10_Projects/sapo-invoice/epic-102-phi-giao-hang-theo-nguon-don-v2/epic-102-test-cases\|Epic 102 — Test cases]] | Test case epic #102 — cấu hình, dựng dòng phí, thời điểm áp dụng/HĐĐC, unit BE, regression |
 | [[10_Projects/sapo-invoice/epic-102-phi-giao-hang-theo-nguon-don-v2/epic-102-cursor-prompt-fix-review\|Epic 102 — Cursor prompt fix review]] | Fix sau review lần 1: tên chip nguồn ngừng áp dụng (fetch theo `ids`), giữ `null` khi chưa tải được nguồn, bỏ FQN trong test |
 | [[10_Projects/sapo-invoice/epic-102-phi-giao-hang-theo-nguon-don-v2/epic-102-test-results\|Epic 102 — Test results]] | Unit 51/51 (JDK 11) + staging: cấu hình C/F pass, dựng dòng phí D1/D3 pass (`EIN08987`/`EIN08988`); còn C8/F7, E, R, Auto Invoice riêng |
+| [[10_Projects/sapo-invoice/epic-100-nhat-ky-hoat-dong/epic-100-plan\|Epic 100 — Plan]] | Nhật ký hoạt động: phụ thuộc BE (dev/master), lệch SRS v0.21 ↔ API !14, hợp đồng API, DS vs thư viện cũ, Figma, FE #24 (màn danh sách + mock, test Chrome), BE #20 (CDC `invoice_mistake_logs`/`invoice_statement_logs`), câu hỏi mở |
 
 ## Liên kết
 
