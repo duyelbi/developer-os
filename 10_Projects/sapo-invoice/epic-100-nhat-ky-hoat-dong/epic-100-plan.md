@@ -1,6 +1,6 @@
 ---
 created: 2026-10-05 15:30
-status: Đang làm — FE màn danh sách xong với mock (chưa commit), chờ BE sửa API theo SRS v0.21
+status: Đang làm — FE màn danh sách xong với mock (draft MR !424/!425), BE #20 chờ chốt hướng intent với congnv
 project: "[[10_Projects/sapo-invoice/README]]"
 ---
 
@@ -23,9 +23,9 @@ Ghi nhận **ai làm gì, trên đối tượng nào, lúc nào, từ IP nào** 
 | #17 (#0) | Nền tảng: pipeline ingest → ES + query API | congnv | Done Code — MR !14 **chưa merge** |
 | #25 (#1) | Cross-cutting: envelope IP/UA, retention, DLT | congnv | Done Code |
 | #18 (#2) | Nhóm Cấu hình (diff trước→sau) | congnv | Wait to Test |
-| #19 (#3) | Hóa đơn đầu ra | trongns | To do (chưa có MR) |
-| #20 (#4) | **Xử lý hóa đơn (TBSS/thay thế/điều chỉnh)** | **duynd7** | To do |
-| #21/#22 (#5/#6) | Danh mục · Đăng ký phát hành | manhtv3 | To do |
+| #19 (#3) | Hóa đơn đầu ra | trongns | To do (chưa có nhánh, 2026-10-07) |
+| #20 (#4) | **Xử lý hóa đơn (TBSS/thay thế/điều chỉnh)** | **duynd7** | To do — chưa có nhánh/MR (2026-10-07) |
+| #21/#22 (#5/#6) | Danh mục · Đăng ký phát hành | manhtv3 | Consumer đã vào `dev` (`1aa6ee7`, 2026-10-06, nhánh `feat/activity-log-catalog-registration`) |
 | #23 (#7) | Hóa đơn đầu vào | hungnt10 | To do |
 | #24 (#8) | **Màn tra cứu (FE)** | **duynd7** | Đang làm |
 | #26 (#9) | Lọc theo người thao tác + API list-actors | congnv | To do |
@@ -37,10 +37,12 @@ Ghi nhận **ai làm gì, trên đối tượng nào, lúc nào, từ IP nào** 
 | Quyền `activity_log` | admin-service !607 `feat/activity-log-permission` | ✅ | ❌ |
 | Emit nhóm Cấu hình (`setting_change_logs`) | admin-service `feat/activity-log-setting-change-logs` | ✅ | ❌ |
 | Actor = OAuth app | admin-service !609 `feat/activity-log-actor-oauth` | ❌ | ❌ |
-| Service `activity-log` + query API | services !14 `feat/activity-log-service` → master | ⚠️ không kiểm được (quyền) | ❌ |
+| Service `activity-log` + query API | services !14 `feat/activity-log-service` → master | ✅ (kiểm bằng git 2026-10-07) | ❌ MR còn mở |
 
 - **Service `activity-log` đã chạy trên dev**: `GET /api/activity_logs` ở `sapo-invoice-dev.sapocorp.vn` trả 401 body `{"error":"unauthorized","error_description":"Authentication is required"}` — khác body 401 của admin-service (`{"error":"Unauthorized"}`, kể cả path không tồn tại) → gateway đã route sang service mới.
-- **Quyền repo:** tài khoản `duynd7` chỉ có **Planner (level 15)** ở `sapo-invoice-services` → không clone/đọc file/xem nhánh (403); đọc code qua **API diff của MR** (`/merge_requests/14/changes`). **Phải xin quyền Developer trước khi làm #20.**
+- **Quyền repo:** ~~Planner (15) qua group → 403~~ → **đã được cấp Developer (30) cấp project (2026-10-07)**. Đã clone `~/invoice/sapo-invoice-services` (đang ở `dev`). Ghi nhớ: Reporter (20) mới clone được; Developer (30) mới push/mở MR; **không cần Owner**.
+- **Lib `sapo-invoice-common`** (`sapo-invoice-libs/sapo-invoice-common`): !15 capture-kit ✅ master (2026-09-22); !16 model + `ActorType.app` (1.2.8) ❌ còn mở dù 1.2.8 đã có trên Nexus.
+- **admin-service `master`** chỉ có !584 `feature/decimal-config-log` (bảng `decimal_configuration_logs`, 2026-09-23) — bản làm sớm, đã bị `setting_change_logs` thay ở nhánh `feat/activity-log-setting-change-logs` (chỉ vào `dev`, **chưa có MR vào master**).
 - Quy trình của congnv ở admin-service: nhánh feature → merge thẳng `dev` để test, MR vào `master` để mở chờ.
 
 ## Lệch SRS v0.21 ↔ issue #24 / API hiện tại
@@ -77,7 +79,7 @@ Chốt (user, 2026-10-05): **làm theo SRS mới nhất, congnv sẽ sửa API.*
 
 ## FE #24 — đã làm (2026-10-05)
 
-Nhánh `feat/activity-log-screen` (tách `origin/master`), repo `sapo-invoice-admin-frontend`, **chưa commit**.
+Nhánh `feat/activity-log-screen` (tách `origin/master`), repo `sapo-invoice-admin-frontend`, commit `72a356b3`. Draft MR: [!424 → master](https://git.dktsoft.com:2008/sapo-money/sapo-invoice/sapo-invoice-admin-frontend/-/merge_requests/424) (19 file) · [!425 → dev](https://git.dktsoft.com:2008/sapo-money/sapo-invoice/sapo-invoice-admin-frontend/-/merge_requests/425) (37 file — kéo theo 3 commit master chưa vào dev: tool DS + `/shipit`, **chốt giữ nguyên**).
 
 | File | Nội dung |
 |---|---|
@@ -101,12 +103,32 @@ Kết quả: lint ✅ · typecheck ✅ · test 95/95 (9 test mới cho dựng c�
 
 **Còn lại:** popup chi tiết · nối API thật · câu mô tả ~60 mã còn lại · tìm theo đuôi SĐT (#26) · trạng thái lỗi/403 thật.
 
-## BE #20 — Xử lý hóa đơn
+## BE #20 — Xử lý hóa đơn (cập nhật 2026-10-07, đã đọc code `dev`)
 
-- Bảng `invoice_mistake_logs`, `invoice_statement_logs` (admin-service, có trên `dev`) **đã đúng dạng canonical** (`tenant_id, <obj>_id, verb, data, actor, created_at`) → `CanonicalLogAdapter` đọc thẳng. Thiếu cột `ip_address/user_agent/channel` (thuộc #25, blocker A5 — IP sau CDN).
-- Việc: Debezium connector + `CanonicalLogMapping` + consumer (mẫu `InvoiceLogProjectorConsumer`) + topic/group trong config-override `sapo-invoice-activity-log.yml` + restart. Playbook: `services/activity-log/HUONG-DAN-TICH-HOP-BE.md` (trong MR !14).
-- Code nền chỉ có ở nhánh `feat/activity-log-service` → **checkout từ nhánh này** (hoặc `dev` nếu đã merge), merge `dev` để test — không chờ master.
-- Cần hỏi congnv: (1) base nhánh #20 từ đâu, !14 đã vào `dev` services chưa; (2) `CanonicalLogMapping` gán **1 `functionCode` cố định / bảng** → tách `invoice_replacement` vs `invoice_adjustment` cần intent resolver (`ProjectorConfig` đang rỗng) — ai làm.
+**Base nhánh:** tách từ `dev` của `sapo-invoice-services` (đã chứa `feat/activity-log-service`) hoặc từ `feat/activity-log-service`. MR #20 nên trỏ vào `feat/activity-log-service` (như !18 trỏ `refactor/file-io-base`), đổi target sang `master` khi !14 merge. Không chờ master.
+
+**Mẫu gần nhất:** commit `1aa6ee7` của manhtv3 — 4 consumer (`Customer/Product/Registration/TemplateLogProjectorConsumer`, ~30 dòng/consumer, copy `InvoiceLogProjectorConsumer`) + topic/group trong `application.yml`. Debezium connector + config-override vẫn ngoài repo.
+
+**Playbook mục 9 (mới, 2026-10-06)** — pattern nhóm nghiệp vụ: tái dùng `_logs` + **domain event** trong `data.events`, projector lọc theo loại event; diff tính ở aggregate. Ghi là *tham chiếu, chưa triển khai* (dành cho diff line item hóa đơn phase sau). Tiền lệ: `InvoiceMistake` đã raise `InvoiceMistakeAcceptEvent(id, oldStatus, newStatus)`.
+
+**Vấn đề: không chỉ là "thêm 2 consumer"** (đọc `InvoiceMistakeWriteService`, `InvoiceMistakeTransmitService`, `InvoiceStatementWriteService` trên `dev` admin-service):
+
+| | `invoice_mistake_logs` | `invoice_statement_logs` |
+|---|---|---|
+| Dạng | canonical ✅ | canonical ✅ |
+| `verb` | `add`/`update`/`delete` — **gửi CQT, CQT phản hồi, Hệ thống cập nhật đều `update`** | `add`/`update`/`delete` — **gửi bên mua, bên bán ký, bên mua ký, rollback đều `update`** (một hàm `store()` dòng ~231) |
+| `data` | snapshot cả bản ghi | snapshot cả `InvoiceStatement`: có **`document_type`** (`cancel`/`replace`/`modify`) và `status` (`draft`, `seller_signed`, `sent_buyer`, `buyer_signed`, …) |
+
+Nếu chỉ copy consumer:
+1. **Sai mã sự kiện** — SRS cần `MISTAKE_SEND`, `*_STATEMENT_SIGN`, `*_STATEMENT_SEND`, bên mua đã ký…; adapter fallback ra `{functionCode}_update` → "Đã cập nhật…".
+2. **Sinh bản ghi rác** — cập nhật do CQT phản hồi / Hệ thống cũng là `update`, trái BR16.
+3. **Không tách Thay thế / Điều chỉnh** — `CanonicalLogMapping` gán 1 `functionCode` cố định/bảng; phải đọc `data.document_type` → sửa adapter.
+
+**Hai hướng (cần congnv chốt — quyết định kiến trúc):**
+- **A. Sửa producer (admin-service):** truyền eventCode/verb chi tiết cho từng thao tác, không ghi khi CQT phản hồi. Projector "ngu" đúng thiết kế, khớp tinh thần playbook mục 9. **← nghiêng về hướng này.**
+- **B. Suy intent trong projector** từ `status` + `document_type` của snapshot: không sửa admin-service nhưng mong manh (snapshot chỉ có trạng thái **sau**).
+
+Thiếu cột `ip_address/user_agent/channel` trên 2 bảng → thuộc #25 (blocker A5 — IP sau CDN).
 
 ## Chạy local / test — lưu ý
 
@@ -125,4 +147,7 @@ Kết quả: lint ✅ · typecheck ✅ · test 95/95 (9 test mới cho dựng c�
 | 4 | Màu badge 9 thao tác chưa có trong Figma; badge có đổi màu khi thất bại (G10) | xamlt / minhvtn2 |
 | 5 | Feature flag (tên, hành vi khi tắt) — chưa đạt DoR | BA/PO |
 | 6 | Duyệt `--allow-increase` cho màn mới dùng thư viện cũ | lead FE / người phụ trách DS |
-| 7 | Quyền Developer repo `sapo-invoice-services` | lead |
+| ~~7~~ | ~~Quyền Developer repo `sapo-invoice-services`~~ — ✅ đã cấp 2026-10-07 | — |
+| 8 | #20 chọn hướng A (producer phát intent) hay B (projector suy từ snapshot); ai sửa admin-service | congnv |
+| 9 | Target MR #20: `feat/activity-log-service` hay `dev`/`master`; ai thêm Debezium connector + config-override cho 2 bảng | congnv |
+| 10 | Khi nào merge !14 / lib !16 / `setting-change-logs` vào master | congnv |
