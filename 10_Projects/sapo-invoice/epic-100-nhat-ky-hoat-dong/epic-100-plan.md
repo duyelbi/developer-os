@@ -1,6 +1,6 @@
 ---
 created: 2026-10-05 15:30
-status: Đang làm — FE màn danh sách (mock) draft !424/!425; BE #20 xong code (!618/!624 admin, !21/!23 services), config-override + connector `invoice_statement_logs` ✅ (2026-10-08); chờ merge !23 vào dev
+status: Đang làm — FE màn danh sách (mock) draft !424/!425; BE #20 xong code (!618/!624 admin, !21/!23 services), config-override + connector ✅; **services đã vào dev** (`8293356`, 2026-10-08) — chờ pipeline deploy + admin !624 để test e2e
 project: "[[10_Projects/sapo-invoice/README]]"
 ---
 
@@ -24,7 +24,7 @@ Ghi nhận **ai làm gì, trên đối tượng nào, lúc nào, từ IP nào** 
 | #25 (#1) | Cross-cutting: envelope IP/UA, retention, DLT | congnv | Done Code |
 | #18 (#2) | Nhóm Cấu hình (diff trước→sau) | congnv | Wait to Test |
 | #19 (#3) | Hóa đơn đầu ra | trongns | To do (chưa có nhánh, 2026-10-07) |
-| #20 (#4) | **Xử lý hóa đơn (TBSS/thay thế/điều chỉnh)** | **duynd7** | Code xong — admin !618 (→master) / !624 (→dev), services !21 (→master) / !23 (→dev) (2026-10-08) |
+| #20 (#4) | **Xử lý hóa đơn (TBSS/thay thế/điều chỉnh)** | **duynd7** | services ✅ vào dev (!23 merged 2026-10-08); admin !624 (→dev) chờ merge; !618 / !21 (→master) draft |
 | #21/#22 (#5/#6) | Danh mục · Đăng ký phát hành | manhtv3 | Consumer đã vào `dev` (`1aa6ee7`, 2026-10-06, nhánh `feat/activity-log-catalog-registration`) |
 | #23 (#7) | Hóa đơn đầu vào | hungnt10 | To do |
 | #24 (#8) | **Màn tra cứu (FE)** | **duynd7** | Đang làm |
@@ -126,7 +126,9 @@ Kết quả: lint ✅ · typecheck ✅ · test 95/95 (9 test mới cho dựng c�
 ### services — projector (!21 → master, !23 → dev; commit `b3a8f9d`)
 - `InvoiceProcessingLogAdapter` — **adapter riêng** (playbook mục 5), không đụng `CanonicalLogAdapter`/`ProjectorConfig`: dùng canonical cho actor/envelope/occurredAt; `IntentEventResolver` registry cục bộ → ghi đè `eventCode/actionCode/operationType`; `functionCode` theo `document_type`; `objectCode` = mã TB / số biên bản; `detail` = `status_from/status_to` (+ `invoice_count`, `tax_authority_notification_no` / `invoice_id`); không intent hoặc `cancel` → `null` (bỏ qua).
 - `InvoiceMistakeLogProjectorConsumer`, `InvoiceStatementLogProjectorConsumer` + topic/group `application.yml`. Test 16/16 module.
-- ⚠️ !23 → dev **conflict** `application.yml` (manhtv3 thêm topic cùng chỗ) — giữ cả hai phía khi merge; resolve trên nhánh feature sẽ lẫn code dev sang !21.
+- ✅ **!23 → dev đã merge (2026-10-08 09:55)** — cách làm (user chọn): `git checkout dev` + pull mới nhất → `git merge --no-ff origin/feat/activity-log-invoice-processing` → resolve `application.yml` giữ cả hai phía (4 topic/group Danh mục + 2 của #20; YAML 9/9) → test activity-log 16/16 + compile e-document → **push thẳng `dev`** (`632f537..8293356`) → GitLab tự đánh dấu !23 merged. Không merge dev ngược vào nhánh feature → !21 (→master) vẫn sạch.
+- Merge kéo theo vào dev: hotfix e-document !19 của congnv (`5c270aa`, `TaxDocumentPublishService` — đã trên master từ 05/10; cũng là lý do title !23 bị lấy theo commit đó).
+- Pipeline dev [#1137103](https://git.dktsoft.com:2008/sapo-money/sapo-invoice/sapo-invoice-services/-/pipelines/1137103): test → package activity-log + e-document → deploy (= restart activity-log với consumer + config mới).
 
 ### Quy ước team: mỗi nhóm một adapter riêng (điều tra 2026-10-08)
 User/congnv: `CanonicalLogAdapter` **chỉ dùng cho `invoice_logs`** — nhóm khác viết adapter riêng.
@@ -182,7 +184,7 @@ User/congnv: `CanonicalLogAdapter` **chỉ dùng cho `invoice_logs`** — nhóm 
 - An toàn: consumer thông báo CQT bản cũ trên dev gặp event lạ → `continue`, không lỗi.
 
 ### Test trên dev (sau khi merge)
-**Điều kiện:** admin-service !624 deploy (hoặc chạy local nhánh feature) **trước**, services !23 sau (CI deploy = restart) · config-override ✅ · connector 2 bảng ✅ · `auto-offset-reset: latest` → chỉ thao tác MỚI.
+**Điều kiện:** services ✅ đã vào dev (chờ pipeline #1137103 deploy xong) · admin-service !624 merge/deploy **hoặc** chạy local nhánh feature (ghi cùng DB dev) · config-override ✅ · connector 2 bảng ✅ · `auto-offset-reset: latest` → chỉ thao tác MỚI. Kiểm thêm: sau thao tác biên bản đầu tiên, topic `sapo_invoice.raw.sapo_invoice.invoice_statement_logs` phải hiện ở `…/api/kafka-connect-1/connectors/invoice.sapo_invoice.invoice_statement_logs.v1.0/topics`.
 
 | Thao tác (SI dev) | Kỳ vọng `event_code` |
 |---|---|
