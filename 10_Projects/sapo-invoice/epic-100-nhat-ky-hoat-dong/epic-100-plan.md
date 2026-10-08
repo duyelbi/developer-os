@@ -1,6 +1,6 @@
 ---
 created: 2026-10-05 15:30
-status: Đang làm — FE màn danh sách (mock) draft !424/!425; BE #20 xong code (!618/!624 admin, !21/!23 services), config-override đã lên dev; chờ connector `invoice_statement_logs`
+status: Đang làm — FE màn danh sách (mock) draft !424/!425; BE #20 xong code (!618/!624 admin, !21/!23 services), config-override + connector `invoice_statement_logs` ✅ (2026-10-08); chờ merge !23 vào dev
 project: "[[10_Projects/sapo-invoice/README]]"
 ---
 
@@ -128,6 +128,21 @@ Kết quả: lint ✅ · typecheck ✅ · test 95/95 (9 test mới cho dựng c�
 - `InvoiceMistakeLogProjectorConsumer`, `InvoiceStatementLogProjectorConsumer` + topic/group `application.yml`. Test 16/16 module.
 - ⚠️ !23 → dev **conflict** `application.yml` (manhtv3 thêm topic cùng chỗ) — giữ cả hai phía khi merge; resolve trên nhánh feature sẽ lẫn code dev sang !21.
 
+### Quy ước team: mỗi nhóm một adapter riêng (điều tra 2026-10-08)
+User/congnv: `CanonicalLogAdapter` **chỉ dùng cho `invoice_logs`** — nhóm khác viết adapter riêng.
+
+| Issue | Người | Nhánh / MR | Adapter | Mã sự kiện | `action_code` | Bỏ row không intent |
+|---|---|---|---|---|---|---|
+| #19 HĐ đầu ra | trongns | chưa có nhánh | (`CanonicalLogAdapter` / `invoice_logs`) | — | — | — |
+| #21/#22 Danh mục + Đăng ký | manhtv3 | `feat/activity-log-catalog-registration`, !20 → master (fix `32be38b` 07/10 chưa vào dev) | `CatalogRegistrationLogAdapter` | suy từ `verb`, **VIẾT HOA** (`CUSTOMER_CREATE`) | ⚠️ `verb` thô (`add`) | ❌ |
+| #23 HĐ đầu vào | hungnt10 | `feat/activity-log-invoice-collector` (chưa MR) | `InputInvoiceLogAdapter` | domain event, registry **`ProjectorConfig` chung** + enum `InputInvoiceEventCode`, viết thường | ✅ | ✅ |
+| #20 Xử lý HĐ | duynd7 | !21 / !23 | `InvoiceProcessingLogAdapter` | domain event, registry **cục bộ**, viết thường | ✅ | ✅ |
+
+- hungnt10 viết **playbook mục 10** — pattern "tái dùng `_logs` + domain event + adapter riêng, không event → bỏ" — #20 cùng hướng.
+- Lệch cần thống nhất: hoa/thường của `eventCode` (chỉ manhtv3 viết HOA); `action_code` thô của manhtv3 làm bộ lọc Thao tác FE ("Thêm mới" = `create`) không ra dữ liệu Danh mục.
+- manhtv3 sửa `ActivityIndexer` (bắt 409 qua `ResponseException`) — file chung, chưa vào dev/master.
+- Merge vào master sẽ conflict nhỏ `application.yml` giữa !21, !20, nhánh hungnt10 (cùng khối topic/group) — giữ tất cả dòng.
+
 ### Nhánh — quy ước user chốt
 - **Mỗi repo 1 nhánh** `feat/activity-log-invoice-processing`, MR vào master + dev từ cùng nhánh. Đã đóng !619/!22 và xóa nhánh `-dev` (2026-10-08). Repo không có `staging`.
 
@@ -137,17 +152,19 @@ Kết quả: lint ✅ · typecheck ✅ · test 95/95 (9 test mới cho dựng c�
 - Lệch SRS D10: SRS cho sửa biên bản đã `buyer_signed`, code đang chặn — không đổi.
 
 ### Hạ tầng: Debezium · config-override · restart (2026-10-08)
-**Debezium connector** = CDC trong Kafka Connect: đọc binlog MariaDB, mỗi INSERT/UPDATE ở bảng được theo dõi → 1 message vào topic `sapo_invoice.raw.<db>.<table>`. activity-log không đọc DB admin, chỉ nghe topic. "Thêm connector cho bảng" = thêm bảng vào danh sách bảng của connector (hạ tầng, ngoài code — DevOps/congnv). Kafka Connect REST dev không truy cập được từ máy (thử 8083/8084/18083).
+**Debezium connector** = CDC trong Kafka Connect: đọc binlog MariaDB, mỗi INSERT/UPDATE ở bảng được theo dõi → 1 message vào topic `sapo_invoice.raw.<db>.<table>`. activity-log không đọc DB admin, chỉ nghe topic. "Thêm connector cho bảng" = thêm bảng vào danh sách bảng của connector (hạ tầng, ngoài code — DevOps/congnv). Kafka Connect REST trực tiếp (8083) không vào được từ máy, nhưng có **Kafka Connect UI** `http://192.168.12.25:8200/#/cluster/kafka-connect-1` + REST proxy `http://192.168.12.25:8200/api/kafka-connect-1` (`/connectors`, `/connectors/<name>/status`, `/connectors/<name>/topics`). Tên topic = `database.server.name` (`sapo_invoice.raw`) + `.<db>.<table>`.
 
 | Bảng | Connector/topic | Ghi chú |
 |---|---|---|
-| `invoice_mistake_logs` | ✅ đã có — `sapo_invoice.raw.sapo_invoice.invoice_invoice_mistake_logs` | tên "invoice_invoice" là tên thật; admin-service đọc (`sapo-invoice-admin.yml`) cho `InvoiceMistakeStatusNotificationConsumer` |
-| `invoice_statement_logs` | ❌ chưa có | không file config nào nhắc — **cần DevOps/congnv thêm**, xác nhận tên topic |
+| `invoice_mistake_logs` | ✅ connector `sapo_invoice_invoice_mistake_logs.v1.2` → topic **`sapo_invoice.raw.sapo_invoice.invoice_mistake_logs`** (xác nhận qua `/topics`) | ⚠️ `sapo-invoice-admin.yml` dòng 49 khai **sai** `..._invoice_invoice_mistake_logs` → `InvoiceMistakeStatusNotificationConsumer` trên dev nghe topic không tồn tại (lỗi có sẵn, ngoài #20 — báo congnv) |
+| `invoice_statement_logs` | ✅ **tạo 2026-10-08**: `invoice.sapo_invoice.invoice_statement_logs.v1.0` (congnv chỉ cách: tham khảo connector `invoice_logs`, đặt tên `invoice.<db>.<table>.v1.0`) — connector + task `RUNNING` | Topic `sapo_invoice.raw.sapo_invoice.invoice_statement_logs` chỉ xuất hiện khi bảng có dòng mới (`snapshot.mode=SCHEMA_ONLY`) |
 
 **config-override** = repo `sapo-money/sapo-invoice/dev-ops/config-override` (nhánh `dev`; prod: `dev-ops/prod-config-override`), config server đọc lúc service khởi động. `application.yml` trong code chỉ có tên mặc định, **tên topic thật nằm ở đây**. User có Developer (30). Repo commit thẳng `dev` là chủ yếu.
-- ✅ **Đã push thẳng `dev` `85724fd` (2026-10-08)** — `sapo-invoice-activity-log.yml` thêm `invoice-mistake-log` / `invoice-statement-log` + group `sapo-invoice.activity-log.invoice-mistake` / `.invoice-statement`. Group riêng — dùng chung group admin-service thì 2 bên giành message.
+- ✅ **Đã push thẳng `dev` `85724fd` + sửa tên topic mistake `f22ae37` (2026-10-08)** — `sapo-invoice-activity-log.yml` thêm `invoice-mistake-log` / `invoice-statement-log` + group `sapo-invoice.activity-log.invoice-mistake` / `.invoice-statement`. Group riêng — dùng chung group admin-service thì 2 bên giành message.
 - ⚠️ Push rule "author phải là member": repo clone mới lấy email global `duylanh1818@gmail.com` → bị chặn. Đặt local `DuyND7 <duynd7@sapo.vn>` cho mọi repo công việc (`git config --local user.email duynd7@sapo.vn`).
 - Clone: `~/invoice/dev-ops-config-override`.
+
+**Tạo connector (cách đã làm 2026-10-08):** Kafka Connect UI → **NEW** → **MySqlConnector** → khung PROPERTIES dán config chép từ `sapo_invoice_invoice_logs.v1.1`, chỉ đổi `name`, `table.whitelist`, `message.key.columns`, `database.history.kafka.topic` (`history_sapo_invoice.sapo_invoice.raw.<table>.v1.0`) → điền `database.password` (copy từ connector cũ — **user tự điền**, AI không nhập mật khẩu) → hết dòng đỏ validate → CREATE. Bản config không có mật khẩu: `~/invoice/dev-ops-config-override/.local/invoice_statement_logs.connector.properties` (đã exclude khỏi git).
 
 **Restart activity-log — vì sao/thế nào:** Spring Boot đọc config server + chốt topic `@KafkaListener` **chỉ lúc khởi động**; code mới cần image mới. Merge services vào `dev` → CI `test activity-log` → `package activity-log` (jib) → trigger pipeline deploy (`STACK_DEPLOYMENT_TOKEN`) → container mới = restart. Config merge **trước** deploy thì không cần restart riêng; sửa config **sau** deploy → Retry job `package activity-log` của pipeline `dev` mới nhất (hoặc nhờ congnv/DevOps). `auto-offset-reset: latest` → group mới chỉ nhận thao tác sau khi khởi động.
 
@@ -159,7 +176,7 @@ Kết quả: lint ✅ · typecheck ✅ · test 95/95 (9 test mới cho dựng c�
 - An toàn: consumer thông báo CQT bản cũ trên dev gặp event lạ → `continue`, không lỗi.
 
 ### Test trên dev (sau khi merge)
-**Điều kiện:** admin-service !624 deploy (hoặc chạy local nhánh feature) **trước**, services !23 sau (CI deploy = restart) · config-override ✅ đã có · connector `invoice_statement_logs` (mistake đã có → test thông báo sai sót được ngay khi !23 lên dev) · `auto-offset-reset: latest` → chỉ thao tác MỚI.
+**Điều kiện:** admin-service !624 deploy (hoặc chạy local nhánh feature) **trước**, services !23 sau (CI deploy = restart) · config-override ✅ · connector 2 bảng ✅ · `auto-offset-reset: latest` → chỉ thao tác MỚI.
 
 | Thao tác (SI dev) | Kỳ vọng `event_code` |
 |---|---|
@@ -194,6 +211,8 @@ Kiểm từng tầng:
 | 6 | Duyệt `--allow-increase` cho màn mới dùng thư viện cũ | lead FE / người phụ trách DS |
 | ~~7~~ | ~~Quyền Developer repo `sapo-invoice-services`~~ — ✅ đã cấp 2026-10-07 | — |
 | ~~8~~ | ~~#20 hướng A hay B~~ — ✅ chốt A, đã implement (2026-10-07) | — |
-| 9 | Thêm `invoice_statement_logs` vào Debezium connector + xác nhận tên topic (config-override ✅ đã push dev; `invoice_mistake_logs` đã có topic) | congnv / DevOps |
+| ~~9~~ | ~~Connector `invoice_statement_logs`~~ — ✅ tạo 2026-10-08 | — |
+| 12 | `sapo-invoice-admin.yml` khai sai topic `..._invoice_invoice_mistake_logs` → consumer thông báo CQT của admin trên dev không nhận message | congnv |
 | 10 | Khi nào merge lib !16 / `setting-change-logs` / quyền !607 vào master (!14 đã merge 2026-10-07) | congnv |
-| 11 | Ai sửa `CanonicalLogAdapter` chung (action_code thô, thiếu object_code, không bỏ row không intent) — ảnh hưởng #19, #21/#22 | congnv |
+| ~~11~~ | ~~Ai sửa `CanonicalLogAdapter` chung~~ — chốt: chỉ cho `invoice_logs`, nhóm khác adapter riêng | — |
+| 13 | Thống nhất hoa/thường `eventCode` + `action_code` thô của nhóm Danh mục | congnv / manhtv3 |
