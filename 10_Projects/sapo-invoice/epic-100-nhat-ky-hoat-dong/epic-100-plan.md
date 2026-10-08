@@ -156,13 +156,19 @@ User/congnv: `CanonicalLogAdapter` **chỉ dùng cho `invoice_logs`** — nhóm 
 
 | Bảng | Connector/topic | Ghi chú |
 |---|---|---|
-| `invoice_mistake_logs` | ✅ connector `sapo_invoice_invoice_mistake_logs.v1.2` → topic **`sapo_invoice.raw.sapo_invoice.invoice_mistake_logs`** (xác nhận qua `/topics`) | ⚠️ `sapo-invoice-admin.yml` dòng 49 khai **sai** `..._invoice_invoice_mistake_logs` → `InvoiceMistakeStatusNotificationConsumer` trên dev nghe topic không tồn tại (lỗi có sẵn, ngoài #20 — báo congnv) |
+| `invoice_mistake_logs` | ✅ connector `sapo_invoice_invoice_mistake_logs.v1.2` → topic **`sapo_invoice.raw.sapo_invoice.invoice_mistake_logs`** (xác nhận qua `/topics`) | ❓ `sapo-invoice-admin.yml` dòng 49 khai `..._invoice_invoice_mistake_logs` (hungnt10, `888f607`, 2024-10-28 — **có từ trước, không do #20**) — **chưa xác nhận là lỗi**, xem mục dưới |
 | `invoice_statement_logs` | ✅ **tạo 2026-10-08**: `invoice.sapo_invoice.invoice_statement_logs.v1.0` (congnv chỉ cách: tham khảo connector `invoice_logs`, đặt tên `invoice.<db>.<table>.v1.0`) — connector + task `RUNNING` | Topic `sapo_invoice.raw.sapo_invoice.invoice_statement_logs` chỉ xuất hiện khi bảng có dòng mới (`snapshot.mode=SCHEMA_ONLY`) |
 
 **config-override** = repo `sapo-money/sapo-invoice/dev-ops/config-override` (nhánh `dev`; prod: `dev-ops/prod-config-override`), config server đọc lúc service khởi động. `application.yml` trong code chỉ có tên mặc định, **tên topic thật nằm ở đây**. User có Developer (30). Repo commit thẳng `dev` là chủ yếu.
 - ✅ **Đã push thẳng `dev` `85724fd` + sửa tên topic mistake `f22ae37` (2026-10-08)** — `sapo-invoice-activity-log.yml` thêm `invoice-mistake-log` / `invoice-statement-log` + group `sapo-invoice.activity-log.invoice-mistake` / `.invoice-statement`. Group riêng — dùng chung group admin-service thì 2 bên giành message.
 - ⚠️ Push rule "author phải là member": repo clone mới lấy email global `duylanh1818@gmail.com` → bị chặn. Đặt local `DuyND7 <duynd7@sapo.vn>` cho mọi repo công việc (`git config --local user.email duynd7@sapo.vn`).
 - Clone: `~/invoice/dev-ops-config-override`.
+
+**❓ Topic `invoice-mistake-log` trong `sapo-invoice-admin.yml` — cần xác nhận, chưa phải lỗi chắc chắn (2026-10-08)**
+- Chắc chắn: key dùng bởi 2 consumer profile `job` — `InvoiceMistakeESIndexConsumer` (index ES; **màn danh sách thông báo sai sót đọc từ ES** qua `InvoiceMistakeSearchService` ← `InvoiceMistakeController`) và `InvoiceMistakeStatusNotificationConsumer`. Config-override chỉ có giá trị tên kép, không file nào ghi đè. 25 connector dev **không** cái nào ghi topic tên kép.
+- Nghi vấn: nếu thật sự sai từ 2024 thì thông báo sai sót mới trên dev không lên danh sách — khó không ai phát hiện → có thể vẫn chạy vì: (1) config gốc `invoice-config-server` (user chỉ Planner, không đọc được) ghi đè giá trị lúc chạy; (2) topic tên kép có tồn tại, do nguồn khác ghi (vd connector v1.0/v1.1 cũ); (3) lỗi có thật nhưng chưa ai để ý (ít khả năng).
+- Xác nhận: lập 1 thông báo sai sót mới trên dev → có lên danh sách = chạy đúng (dòng config chỉ là giá trị bị ghi đè / tên cũ); không lên = lỗi thật → báo hungnt10/congnv. Hoặc nhờ xem consumer group `sapo-invoice.invoice-mistake-es-index` đọc topic nào.
+- #20 **không** bị ảnh hưởng — activity-log có config riêng, đã trỏ đúng topic connector đang ghi.
 
 **Tạo connector (cách đã làm 2026-10-08):** Kafka Connect UI → **NEW** → **MySqlConnector** → khung PROPERTIES dán config chép từ `sapo_invoice_invoice_logs.v1.1`, chỉ đổi `name`, `table.whitelist`, `message.key.columns`, `database.history.kafka.topic` (`history_sapo_invoice.sapo_invoice.raw.<table>.v1.0`) → điền `database.password` (copy từ connector cũ — **user tự điền**, AI không nhập mật khẩu) → hết dòng đỏ validate → CREATE. Bản config không có mật khẩu: `~/invoice/dev-ops-config-override/.local/invoice_statement_logs.connector.properties` (đã exclude khỏi git).
 
@@ -212,7 +218,7 @@ Kiểm từng tầng:
 | ~~7~~ | ~~Quyền Developer repo `sapo-invoice-services`~~ — ✅ đã cấp 2026-10-07 | — |
 | ~~8~~ | ~~#20 hướng A hay B~~ — ✅ chốt A, đã implement (2026-10-07) | — |
 | ~~9~~ | ~~Connector `invoice_statement_logs`~~ — ✅ tạo 2026-10-08 | — |
-| 12 | `sapo-invoice-admin.yml` khai sai topic `..._invoice_invoice_mistake_logs` → consumer thông báo CQT của admin trên dev không nhận message | congnv |
+| 12 | ❓ Xác nhận topic `invoice-mistake-log` của admin-service (`..._invoice_invoice_mistake_logs`, có từ 2024) lúc chạy thật là gì — lập thông báo sai sót mới trên dev xem có lên danh sách không; không lên thì báo | hungnt10 / congnv |
 | 10 | Khi nào merge lib !16 / `setting-change-logs` / quyền !607 vào master (!14 đã merge 2026-10-07) | congnv |
 | ~~11~~ | ~~Ai sửa `CanonicalLogAdapter` chung~~ — chốt: chỉ cho `invoice_logs`, nhóm khác adapter riêng | — |
 | 13 | Thống nhất hoa/thường `eventCode` + `action_code` thô của nhóm Danh mục | congnv / manhtv3 |
