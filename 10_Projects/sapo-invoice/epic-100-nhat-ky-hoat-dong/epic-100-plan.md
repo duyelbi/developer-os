@@ -1,6 +1,6 @@
 ---
 created: 2026-10-05 15:30
-status: Đang làm — FE màn danh sách (mock) draft !424/!425; BE #20 xong code, draft !618 (admin) + !21 (services), chờ connector Debezium để test dev
+status: Đang làm — FE màn danh sách (mock) draft !424/!425; BE #20 xong code (!618/!624 admin, !21/!23 services), config-override đã lên dev; chờ connector `invoice_statement_logs`
 project: "[[10_Projects/sapo-invoice/README]]"
 ---
 
@@ -136,8 +136,30 @@ Kết quả: lint ✅ · typecheck ✅ · test 95/95 (9 test mới cho dựng c�
 - `result = failure`, số lượt gửi–ký, cột IP/UA/channel (#25).
 - Lệch SRS D10: SRS cho sửa biên bản đã `buyer_signed`, code đang chặn — không đổi.
 
+### Hạ tầng: Debezium · config-override · restart (2026-10-08)
+**Debezium connector** = CDC trong Kafka Connect: đọc binlog MariaDB, mỗi INSERT/UPDATE ở bảng được theo dõi → 1 message vào topic `sapo_invoice.raw.<db>.<table>`. activity-log không đọc DB admin, chỉ nghe topic. "Thêm connector cho bảng" = thêm bảng vào danh sách bảng của connector (hạ tầng, ngoài code — DevOps/congnv). Kafka Connect REST dev không truy cập được từ máy (thử 8083/8084/18083).
+
+| Bảng | Connector/topic | Ghi chú |
+|---|---|---|
+| `invoice_mistake_logs` | ✅ đã có — `sapo_invoice.raw.sapo_invoice.invoice_invoice_mistake_logs` | tên "invoice_invoice" là tên thật; admin-service đọc (`sapo-invoice-admin.yml`) cho `InvoiceMistakeStatusNotificationConsumer` |
+| `invoice_statement_logs` | ❌ chưa có | không file config nào nhắc — **cần DevOps/congnv thêm**, xác nhận tên topic |
+
+**config-override** = repo `sapo-money/sapo-invoice/dev-ops/config-override` (nhánh `dev`; prod: `dev-ops/prod-config-override`), config server đọc lúc service khởi động. `application.yml` trong code chỉ có tên mặc định, **tên topic thật nằm ở đây**. User có Developer (30). Repo commit thẳng `dev` là chủ yếu.
+- ✅ **Đã push thẳng `dev` `85724fd` (2026-10-08)** — `sapo-invoice-activity-log.yml` thêm `invoice-mistake-log` / `invoice-statement-log` + group `sapo-invoice.activity-log.invoice-mistake` / `.invoice-statement`. Group riêng — dùng chung group admin-service thì 2 bên giành message.
+- ⚠️ Push rule "author phải là member": repo clone mới lấy email global `duylanh1818@gmail.com` → bị chặn. Đặt local `DuyND7 <duynd7@sapo.vn>` cho mọi repo công việc (`git config --local user.email duynd7@sapo.vn`).
+- Clone: `~/invoice/dev-ops-config-override`.
+
+**Restart activity-log — vì sao/thế nào:** Spring Boot đọc config server + chốt topic `@KafkaListener` **chỉ lúc khởi động**; code mới cần image mới. Merge services vào `dev` → CI `test activity-log` → `package activity-log` (jib) → trigger pipeline deploy (`STACK_DEPLOYMENT_TOKEN`) → container mới = restart. Config merge **trước** deploy thì không cần restart riêng; sửa config **sau** deploy → Retry job `package activity-log` của pipeline `dev` mới nhất (hoặc nhờ congnv/DevOps). `auto-offset-reset: latest` → group mới chỉ nhận thao tác sau khi khởi động.
+
+### Chạy admin-service local (IntelliJ) để test
+- Run config "Dev" = `ACTIVE_PROFILES=dev` → config server dev (`192.168.12.25:20888`) → **ghi thẳng DB dev dùng chung**, Kafka/TVAN dev. Không bật profile `job` → consumer Kafka của admin không chạy local.
+- FE local trỏ service local: `.env` bỏ comment `SERVER_PROXY_API_URL=http://localhost:8080`.
+- Test được ngay: `data.events` trong `invoice_mistake_logs` / `invoice_statement_logs` (DB dev). Vì ghi cùng DB dev, khi connector + services !23 đã lên dev thì thao tác từ local cũng chảy sang activity-log dev — không bắt buộc deploy !624.
+- Không test trọn ở local: bên mua ký qua link email (`statement.url` trỏ domain dev → chạy bản deploy cũ) — gọi thẳng endpoint ký bên mua vào `localhost:8080`; gửi CQT cần tenant có chứng thư.
+- An toàn: consumer thông báo CQT bản cũ trên dev gặp event lạ → `continue`, không lỗi.
+
 ### Test trên dev (sau khi merge)
-**Điều kiện:** deploy admin-service (!624) **trước**, services (!23) sau · Debezium connector 2 bảng + topic/group trong config-override `sapo-invoice-activity-log.yml` · restart activity-log · `auto-offset-reset: latest` → chỉ thao tác MỚI.
+**Điều kiện:** admin-service !624 deploy (hoặc chạy local nhánh feature) **trước**, services !23 sau (CI deploy = restart) · config-override ✅ đã có · connector `invoice_statement_logs` (mistake đã có → test thông báo sai sót được ngay khi !23 lên dev) · `auto-offset-reset: latest` → chỉ thao tác MỚI.
 
 | Thao tác (SI dev) | Kỳ vọng `event_code` |
 |---|---|
@@ -172,6 +194,6 @@ Kiểm từng tầng:
 | 6 | Duyệt `--allow-increase` cho màn mới dùng thư viện cũ | lead FE / người phụ trách DS |
 | ~~7~~ | ~~Quyền Developer repo `sapo-invoice-services`~~ — ✅ đã cấp 2026-10-07 | — |
 | ~~8~~ | ~~#20 hướng A hay B~~ — ✅ chốt A, đã implement (2026-10-07) | — |
-| 9 | Ai thêm Debezium connector + config-override cho `invoice_mistake_logs`, `invoice_statement_logs` (target MR đã chốt: master + dev từ 1 nhánh) | congnv |
+| 9 | Thêm `invoice_statement_logs` vào Debezium connector + xác nhận tên topic (config-override ✅ đã push dev; `invoice_mistake_logs` đã có topic) | congnv / DevOps |
 | 10 | Khi nào merge lib !16 / `setting-change-logs` / quyền !607 vào master (!14 đã merge 2026-10-07) | congnv |
 | 11 | Ai sửa `CanonicalLogAdapter` chung (action_code thô, thiếu object_code, không bỏ row không intent) — ảnh hưởng #19, #21/#22 | congnv |
