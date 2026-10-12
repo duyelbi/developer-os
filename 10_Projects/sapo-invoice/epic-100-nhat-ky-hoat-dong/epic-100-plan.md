@@ -1,6 +1,6 @@
 ---
 created: 2026-10-05 15:30
-status: Đang làm — FE màn danh sách (mock) draft !424/!425; BE #20 xong code (!618/!624 admin, !21/!23 services), config-override + connector ✅; **services đã vào dev** (`8293356`, 2026-10-08) — chờ pipeline deploy + admin !624 để test e2e
+status: Đang làm — FE: Xem thêm + popup đã push (`7e73963a`), gap popup → [[fe-24-popup-gap-plan]]; BE #20 xong code (!618/!624 admin, !21/!23 services), config-override + connector ✅; **services đã vào dev** (`8293356`, 2026-10-08) — chờ pipeline deploy + admin !624 để test e2e
 project: "[[10_Projects/sapo-invoice/README]]"
 ---
 
@@ -10,6 +10,7 @@ project: "[[10_Projects/sapo-invoice/README]]"
 - Việc của mình (`duynd7`): **#24 Màn tra cứu (FE)** — chính; **#20 Nhật ký Xử lý hóa đơn (BE)**
 - SRS (repo `invoice-docs`, `docs/invoice/nhat-ky-hoat-dong/`): `srs-tra-cuu-nhat-ky.md` **v0.21 (2026-10-02)** · `srs-ghi-nhan-su-kien.md` v0.50 · `bang-tong-hop-thao-tac.md` v0.37 (96 mã sự kiện, mẫu câu từng dòng) · `su-kien-a1…a6-*.md` (Phụ lục A theo nhóm)
 - Thiết kế kỹ thuật: `invoice-docs` MR !156 `thiet-ke-ky-thuat.md` (chưa merge)
+- Plan tiếp theo cho Cursor (popup, sau khi BA trả lời 2026-10-12): [[fe-24-popup-gap-plan]]
 - Figma: [SAPO-E-INVOICE `35096:157917`](https://www.figma.com/design/7t7C9XzNP3nBJpBismG9zS/SAPO-E-INVOICE?node-id=35096-157917) (`xamlt`, 2026-09-30)
 
 ## Tóm tắt
@@ -207,6 +208,25 @@ Kiểm từng tầng:
 - Browser tích hợp của Claude chặn script Vite (`ERR_BLOCKED_BY_CLIENT`) → test qua **Claude in Chrome**.
 - SSO đăng nhập ở `accounts-staging.sapo.vn` — tự đăng nhập, không để AI nhập mật khẩu.
 
+## B5 — IP đối tác OAuth2 (điều tra 2026-10-12, chưa sửa code)
+
+Nhật ký **không** lấy IP qua `IpUtils`. Envelope hoạt động lấy **phần tử đầu** của `X-Forwarded-For`, không có header thì `request.getRemoteAddr()`:
+
+- `ActorHelper.getCurrentIpAddress()` (`origin/dev`) — dùng khi ghi log khách hàng, tờ khai, mẫu, hàng hóa.
+- `ConfigChangeLogWriter.currentHeader("X-Forwarded-For", true)` — cùng cách, cho nhóm Cấu hình.
+
+`IpUtils.getRemoteIP` (lib `sapo-invoice-common` 1.2.6) ưu tiên `X-Real-IP` rồi mới tới hop đầu của XFF. Chỉ dùng ở rate limit và consent, **không** đi vào nhật ký.
+
+`OAuthAuditService.logRateLimitExceeded` nhận `ipAddress` là tham số. Không thấy chỗ gọi nào gắn IP đó vào bản ghi activity log.
+
+Config admin (`sapo-invoice-admin.yml`, `application*.yml`) **không** bật `server.forward-headers-strategy`, `remote-ip-header`, `internal-proxies`. Trong `dev-ops-config-override` và `servers` không thấy chỗ gateway ghi đè hay nối thêm `X-Forwarded-For`.
+
+**Kết luận:** chưa chứng minh được `ip_address` là IP thật của máy chủ đối tác. Hop đầu XFF do client tự gửi được nếu proxy chỉ nối thêm. Chưa gọi thử trên dev (không có client secret). Ảnh hưởng mọi actor, không chỉ OAuth2.
+
+**Đề xuất E19 (chờ BA):** chưa hiện IP của actor `app` như IP tin cậy. Nếu BA muốn hiện IP thì BE (`congnv`, #25) lấy từ `X-Real-IP` do gateway đặt, hoặc đếm từ phải qua proxy tin cậy — sửa `ActorHelper.getCurrentIpAddress` và `ConfigChangeLogWriter.currentHeader`. Hỏi DevOps: ingress/nginx **ghi đè** hay **nối thêm** XFF, có đặt `X-Real-IP` không.
+
+**Trả lời BA:** Hiện nhật ký lấy địa chỉ ở đầu header `X-Forwarded-For`. Địa chỉ đó đối tác có thể tự điền nếu cổng vào không ghi đè. Chưa đối chiếu được với IP thật trên dev. Đề xuất tạm không coi đó là IP máy chủ đối tác, cho đến khi bên vận hành xác nhận cổng vào ghi đè header và bên kỹ thuật đọc IP từ header đó.
+
 ## Câu hỏi mở
 
 | # | Câu hỏi | Hỏi ai |
@@ -224,3 +244,4 @@ Kiểm từng tầng:
 | 10 | Khi nào merge lib !16 / `setting-change-logs` / quyền !607 vào master (!14 đã merge 2026-10-07) | congnv |
 | ~~11~~ | ~~Ai sửa `CanonicalLogAdapter` chung~~ — chốt: chỉ cho `invoice_logs`, nhóm khác adapter riêng | — |
 | 13 | Thống nhất hoa/thường `eventCode` + `action_code` thô của nhóm Danh mục | congnv / manhtv3 |
+| 14 | Ingress ghi đè hay nối thêm `X-Forwarded-For`, có đặt `X-Real-IP` không (B5) | DevOps / congnv |
