@@ -40,6 +40,7 @@ developer-os ở đây chỉ giữ: quyết định kỹ thuật, bug, bài họ
 | Note | Nội dung |
 |---|---|
 | [[10_Projects/design-system/audit-coverage-invoice]] | Audit độ phủ DS ↔ nhu cầu thật của invoice: backlog DS xếp theo trọng số sử dụng, kết luận React 19, thứ tự migrate |
+| [[10_Projects/design-system/detail-page-pattern-plan]] | Pattern màn chi tiết `detail-page@1` (Duy): việc còn lại ở 3 repo DS / docs / app — skill sinh code, reference cho BA, sinh màn LSX — cho agent triển khai |
 
 ## Liên kết
 
